@@ -1,0 +1,14 @@
+spring:
+  jackson:
+    default-property-inclusion: non-empty
+  jpa:
+      hibernate:
+          ddl-auto: update
+  datasource:
+      url: jdbc:postgresql://localhost:5432/accounting
+      username: accounting
+      password: accounting
+jdbc:
+  url: jdbc:postgresql://localhost:5432/accounting
+  username: accounting
+  password: accounting
