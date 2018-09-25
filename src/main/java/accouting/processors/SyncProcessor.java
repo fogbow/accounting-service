@@ -1,5 +1,8 @@
 package accouting.processors;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 import javax.sql.DataSource;
 
 import org.postgresql.Driver;
@@ -53,13 +56,17 @@ public class SyncProcessor implements Runnable {
 	
 	private void retriveAndSave() {
 		this.jdbcTemplate.query(
-				"SELECT * FROM timestamp WHERE order_state=?  OR order_state=?",
+				"SELECT t.* FROM timestamp as t INNER JOIN order_table as o on t.order_id=o.id WHERE (t.order_state=? OR t.order_state=?)",
 				
 				new Object[] { "FULFILLED", "CLOSED" },
-				(rs, rowNum) -> new Record(rs.getString("orderId"), rs.getString("resourceType"),
-						rs.getString("spec"), rs.getString("userId"), rs.getString("userName"),
-						rs.getString("requestingMember"), rs.getString("providingMember"), rs.getLong("startTime"))
+				(rs, rowNum) -> extractRecord(rs)
 				).forEach(record -> this.recordRepository.save(record));
+	}
+	
+	private Record extractRecord(ResultSet rs) throws SQLException {
+		return new Record(rs.getString("orderId"), rs.getString("resourceType"),
+				rs.getString("spec"), rs.getString("userId"), rs.getString("userName"),
+				rs.getString("requestingMember"), rs.getString("providingMember"), rs.getLong("startTime"));
 	}
 
 }
