@@ -1,16 +1,23 @@
 package accouting.datastore;
 
+import accouting.model.Order;
 import accouting.model.Record;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class DataBaseManager {
 
     private static DataBaseManager dbManager;
 
     @Autowired
     private RecordRepository recordRepository;
+
+    @Autowired
+    private OrderRepository orderRepository;
 
     public DataBaseManager() {}
 
@@ -28,6 +35,18 @@ public class DataBaseManager {
 
     public void saveRecord(Record record) {
         recordRepository.save(record);
+    }
+
+    public List<Record> getRecords(String userId, String requestingMember, String providingMember, String resourceType) {
+        return recordRepository.findByUserIdAndRequestingMemberAndProvidingMemberAndResouceType(
+                userId, requestingMember, providingMember, resourceType
+        );
+    }
+
+    public List<Order> getAllOrders() {
+        System.out.println(recordRepository);
+        System.out.println(orderRepository);
+        return new ArrayList<Order>();
     }
 
 
