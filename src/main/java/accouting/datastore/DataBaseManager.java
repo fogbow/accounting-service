@@ -38,15 +38,13 @@ public class DataBaseManager {
     }
 
     public List<Record> getRecords(String userId, String requestingMember, String providingMember, String resourceType) {
-        return recordRepository.findByUserIdAndRequestingMemberAndProvidingMemberAndResouceType(
+        return recordRepository.findByUserIdAndRequestingMemberAndProvidingMemberAndResourceType(
                 userId, requestingMember, providingMember, resourceType
         );
     }
 
     public List<Order> getAllOrders() {
-        System.out.println(recordRepository);
-        System.out.println(orderRepository);
-        return new ArrayList<Order>();
+        return orderRepository.findAll();
     }
 
 

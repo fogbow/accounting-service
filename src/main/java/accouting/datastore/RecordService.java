@@ -13,27 +13,23 @@ import java.text.SimpleDateFormat;
 public class RecordService {
 
     @Autowired
-    private DataBaseManager dbManager = DataBaseManager.getDbManager();
+    private DataBaseManager dbManager;
 
     public List<Record> getUserRecords(String userId, String requestingMember, String providingMember,
                                        String resourceType, String beginPeriod, String endPeriod) throws Exception{
-        Date initialDate = new SimpleDateFormat().parse(beginPeriod);
+        Date initialDate = new SimpleDateFormat("yyyy-MM-dd").parse(beginPeriod);
         Timestamp begin = new Timestamp(initialDate.getTime());
 
-        Date finalDate = new SimpleDateFormat().parse(endPeriod);
+        Date finalDate = new SimpleDateFormat("yyyy-MM-dd").parse(endPeriod);
         Timestamp end = new Timestamp(finalDate.getTime());
 
-        List<Record> records = dbManager.getUserRecords(userId);
+        List<Record> records = dbManager.getRecords(userId, requestingMember, providingMember, resourceType);
 
         for (Record rec : records) {
             rec.setDuration(getRealDuration(rec, begin, end));
         }
 
         return records;
-    }
-
-    public void insertRecord(Record record) {
-        dbManager.saveRecord(record);
     }
 
     private long getRealDuration(Record record, Timestamp begin, Timestamp end) {

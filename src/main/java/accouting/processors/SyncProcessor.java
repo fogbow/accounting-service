@@ -1,23 +1,27 @@
 package accouting.processors;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
-
-import javax.sql.DataSource;
 
 import accouting.datastore.DataBaseManager;
 import accouting.datastore.OrderRepository;
 import accouting.model.Order;
+import accouting.model.OrderState;
+import accouting.model.Record;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.SimpleDriverDataSource;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-import accouting.datastore.RecordRepository;
-import accouting.model.Record;
+import javax.annotation.PostConstruct;
 
+@Component
 public class SyncProcessor implements Runnable {
 	private static final int SLEEP_TIME = 3600000; // One hour
 	private static final Logger logger = LoggerFactory.getLogger(SyncProcessor.class);
@@ -26,12 +30,16 @@ public class SyncProcessor implements Runnable {
 //	private RecordRepository recordRepository;
 
 	@Autowired
-	private DataBaseManager dbManager = DataBaseManager.getDbManager();
-	
+	private DataBaseManager dbManager;
+
+	@Autowired
+    private OrderRepository orderRepository;
+
 	public SyncProcessor() {
 	}
 
 	@Override
+    @PostConstruct
 	public void run() {		
 		Boolean isActive = true;
 		while(isActive) {			
@@ -53,8 +61,15 @@ public class SyncProcessor implements Runnable {
 		List<Order> orders = this.dbManager.getAllOrders();
 
 		for(Order ord : orders) {
-			extractRecord(ord);
+			Record rec = extractRecord(ord);
+
+			if(ord.getOrderState().equals(OrderState.CLOSED)) {
+			    rec.setDuration(0);
+            }
+
+			dbManager.saveRecord(rec);
 		}
+
 	}
 
 	
@@ -73,8 +88,10 @@ public class SyncProcessor implements Runnable {
 //				rs.getString("requestingMember"), rs.getString("providingMember"), rs.getLong("startTime"));
 //	}
 
-	private void extractRecord(Order order) {
-		System.out.println(order);
+	private Record extractRecord(Order order) {
+		return new Record(
+		        order.getId(), order.getClass().getName(), "", order.getInstanceId(), "", order.getRequester(), order.getProvider(), new Timestamp(System.currentTimeMillis())
+        );
 	}
 
 }

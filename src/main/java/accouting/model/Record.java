@@ -19,7 +19,7 @@ import java.util.Objects;
 @Table(name = "order_record")
 @Getter @Setter
 @NoArgsConstructor
-public class Record implements Serializable {
+public class Record {
 
 	private static final long serialVersionUID = 1L;
 
@@ -167,6 +167,7 @@ public class Record implements Serializable {
 		this.requestingMember = requestingMember;
 		this.providingMember = providingMember;
 		this.startTime = startTime;
+		this.duration = -1;
 	}
 	
 }

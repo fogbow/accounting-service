@@ -14,12 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
 import java.util.List;
 
-@Controller
 @RestController
 @RequestMapping (value = ResourceUsageController.USAGE_ENDPOINT)
 public class ResourceUsageController {
 
-    public static final String USAGE_ENDPOINT = "usage";
+    public static final String USAGE_ENDPOINT = "/usage";
 
     @Autowired
     private RecordService recordService;
