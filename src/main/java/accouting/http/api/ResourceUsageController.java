@@ -18,12 +18,12 @@ import java.util.List;
 @RequestMapping (value = ResourceUsageController.USAGE_ENDPOINT)
 public class ResourceUsageController {
 
-    public static final String USAGE_ENDPOINT = "/usage";
+    public static final String USAGE_ENDPOINT = "usage";
 
     @Autowired
     private RecordService recordService;
 
-    @RequestMapping(value = "/{userId}/{requestingMember}/{providingMember}/{resourceType}/{initialDate}/{finalDate}", method = RequestMethod.GET)
+    @RequestMapping(value = "/tst", method = RequestMethod.GET)
     public ResponseEntity<List<Record>> getResourceUsageFromUser(
             @PathVariable String userId,
             @PathVariable String requestingMember,
