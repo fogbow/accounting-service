@@ -7,18 +7,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Objects;
 
 @Entity
 @Table(name = "order_record")
-@Getter @Setter
-@NoArgsConstructor
 public class Record {
 
 	private static final long serialVersionUID = 1L;
