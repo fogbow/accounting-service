@@ -1,13 +1,7 @@
 package accouting.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
-import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Objects;
 
@@ -18,11 +12,11 @@ public class Record {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue (strategy = GenerationType.AUTO)
 	@Column(nullable = false, unique = true)
 	private Long id;
 	
-	@Column(nullable = false)
+	@Column(nullable = false, unique = true)
 	private String orderId;
 	
 	@Column(nullable = false)
@@ -103,7 +97,7 @@ public class Record {
 		if (o == null || getClass() != o.getClass()) return false;
 		Record record = (Record) o;
 		return duration == record.duration &&
-				Objects.equals(id, record.id) &&
+				id.equals(record.id) &&
 				Objects.equals(orderId, record.orderId) &&
 				Objects.equals(resourceType, record.resourceType) &&
 				Objects.equals(spec, record.spec) &&
@@ -163,5 +157,7 @@ public class Record {
 		this.startTime = startTime;
 		this.duration = -1;
 	}
+
+	public Record() {}
 	
 }

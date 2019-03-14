@@ -1,4 +1,4 @@
-package accouting.http.api;
+package accouting.api.http;
 
 import accouting.datastore.RecordService;
 import accouting.model.Record;
@@ -8,12 +8,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
-@CrossOrigin
 @RestController
-@RequestMapping (value = "")
+@RequestMapping(value = ResourceUsageController.USAGE_ENDPOINT  )
 public class ResourceUsageController {
 
     public static final String USAGE_ENDPOINT = "usage";
@@ -21,7 +19,7 @@ public class ResourceUsageController {
     @Autowired
     private RecordService recordService;
 
-    @RequestMapping(value = "/tst", method = RequestMethod.GET)
+    @RequestMapping(value = "/{userId}/{requestingMember}/{providingMember}/{resourceType}/{initialDate}/{finalDate}", method = RequestMethod.GET)
     public ResponseEntity<List<Record>> getResourceUsageFromUser(
             @PathVariable String userId,
             @PathVariable String requestingMember,

@@ -1,30 +1,26 @@
 package accouting;
 
+import accouting.datastore.DataBaseManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import accouting.processors.SyncProcessor;
-import org.springframework.stereotype.Controller;
-import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 
 @Component
-public class Sync implements ApplicationRunner {
+public class Sync {
 	private static final Logger logger = LoggerFactory.getLogger(Sync.class);
 
-	@Override
-	public void run(ApplicationArguments args) throws Exception {
-		logger.info("Starting thread to update records.");
+	@Autowired
+	SyncProcessor syncProcess;
 
-		Thread syncProcess = new Thread(new SyncProcessor(), "sync-records");
-		syncProcess.start();
+	@PostConstruct
+	public void tst() {
+		new Thread(syncProcess).start();
 	}
 }
