@@ -1,6 +1,10 @@
-package accouting.datastore;
+package accouting.services;
 
+import accouting.authentication.AccountingPublicKeysHolder;
+import accouting.datastore.DataBaseManager;
 import accouting.model.Record;
+import cloud.fogbow.as.core.util.AuthenticationUtil;
+import cloud.fogbow.common.models.SystemUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +20,8 @@ public class RecordService {
     private DataBaseManager dbManager;
 
     public List<Record> getUserRecords(String userId, String requestingMember, String providingMember,
-                                       String resourceType, String beginPeriod, String endPeriod) throws Exception{
+                                       String resourceType, String beginPeriod, String endPeriod, String systemUserToken) throws Exception{
+        SystemUser requester = AuthenticationUtil.authenticate(AccountingPublicKeysHolder.getInstance().getAsPublicKey(), systemUserToken);
         Date initialDate = new SimpleDateFormat("yyyy-MM-dd").parse(beginPeriod);
         Timestamp begin = new Timestamp(initialDate.getTime());
 
