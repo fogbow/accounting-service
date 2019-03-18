@@ -3,7 +3,7 @@ package accouting.processors;
 import java.sql.Timestamp;
 import java.util.List;
 
-import accouting.datastore.DataBaseManager;
+import accouting.datastore.DatabaseManager;
 import accouting.model.Order;
 import accouting.model.OrderState;
 import accouting.model.Record;
@@ -19,7 +19,7 @@ public class SyncProcessor implements Runnable {
 	private static final Logger logger = LoggerFactory.getLogger(SyncProcessor.class);
 
 	@Autowired
-	private DataBaseManager dbManager;
+	private DatabaseManager dbManager;
 
 	@Override
 	public void run() {		

@@ -4,12 +4,11 @@ import accouting.model.Order;
 import accouting.model.Record;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Component
-public class DataBaseManager {
+public class DatabaseManager {
 
     @Autowired
     private RecordRepository recordRepository;

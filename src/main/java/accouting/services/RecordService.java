@@ -1,7 +1,7 @@
 package accouting.services;
 
 import accouting.authentication.AccountingPublicKeysHolder;
-import accouting.datastore.DataBaseManager;
+import accouting.datastore.DatabaseManager;
 import accouting.model.Record;
 import cloud.fogbow.as.core.util.AuthenticationUtil;
 import cloud.fogbow.common.models.SystemUser;
@@ -17,7 +17,7 @@ import java.text.SimpleDateFormat;
 public class RecordService {
 
     @Autowired
-    private DataBaseManager dbManager;
+    private DatabaseManager dbManager;
 
     public List<Record> getUserRecords(String userId, String requestingMember, String providingMember,
                                        String resourceType, String beginPeriod, String endPeriod, String systemUserToken) throws Exception{
