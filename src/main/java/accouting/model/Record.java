@@ -41,7 +41,7 @@ public class Record {
 	private Timestamp startTime;
 	
 	@Column(nullable = false)
-	private long duration;
+	private long duration = -1;
 
 	public Long getId() {
 		return id;

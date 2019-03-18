@@ -1,5 +1,6 @@
 package accouting.api.http;
 
+import accouting.constants.SystemConstants;
 import accouting.services.RecordService;
 import accouting.model.Record;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,14 +27,9 @@ public class ResourceUsageController {
             @PathVariable String resourceType,
             @PathVariable String initialDate,
             @PathVariable String finalDate,
-            @RequestHeader(value = "Fogbow-User-Token") String systemUserToken
+            @RequestHeader(value = SystemConstants.SYSTEM_USER_TOKEN_HEADER_KEY) String systemUserToken
     ) throws Exception{
         return new ResponseEntity<List<Record>>(recordService.getUserRecords(
                 userId, requestingMember, providingMember, resourceType, initialDate, finalDate, systemUserToken), HttpStatus.OK);
     }
-
-    /**
-     * o cara pode pedir, sendo adm na white list, as orders do usuario que ele quiser.
-     * o cara pode pedir, não sendo adm, as orders dele.
-     */
 }
