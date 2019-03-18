@@ -8,8 +8,6 @@ import java.io.IOException;
 import java.rmi.UnexpectedException;
 import java.security.GeneralSecurityException;
 
-import cloud.fogbow.common.util.ServiceAsymmetricKeysHolder;
-import cloud.fogbow.common.util.CryptoUtil;
 
 @Service
 public class PublicKeyService {

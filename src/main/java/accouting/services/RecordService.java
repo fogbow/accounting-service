@@ -21,7 +21,9 @@ public class RecordService {
 
     public List<Record> getUserRecords(String userId, String requestingMember, String providingMember,
                                        String resourceType, String beginPeriod, String endPeriod, String systemUserToken) throws Exception{
-        SystemUser requester = AuthenticationUtil.authenticate(AccountingPublicKeysHolder.getInstance().getAsPublicKey(), systemUserToken);
+        SystemUser requester = AuthenticationUtil.authenticate(
+                AccountingPublicKeysHolder.getInstance().getAsPublicKey(), systemUserToken);
+
         Date initialDate = new SimpleDateFormat("yyyy-MM-dd").parse(beginPeriod);
         Timestamp begin = new Timestamp(initialDate.getTime());
 

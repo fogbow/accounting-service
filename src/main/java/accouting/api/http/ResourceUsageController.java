@@ -28,7 +28,6 @@ public class ResourceUsageController {
             @PathVariable String finalDate,
             @RequestHeader(value = "Fogbow-User-Token") String systemUserToken
     ) throws Exception{
-
         return new ResponseEntity<List<Record>>(recordService.getUserRecords(
                 userId, requestingMember, providingMember, resourceType, initialDate, finalDate, systemUserToken), HttpStatus.OK);
     }
