@@ -63,4 +63,11 @@ public class RecordService {
         return Math.max(0,newDuration);
     }
 
+    /**
+     * When the SyncProcessor wakes up, retrieve all orders and for each order get all autidableOrderStateChange and treats the following cases:
+     * If there is no record for that order, create one and handle the duration field. If there is, handle the duration field.
+     * By handle the duration field u gotta do:
+     * retrieve all auditableOrderStateChange and decide what to do.
+     */
+
 }

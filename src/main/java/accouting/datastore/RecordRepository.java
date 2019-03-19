@@ -1,5 +1,6 @@
 package accouting.datastore;
 
+import accouting.model.OrderState;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import accouting.model.Record;
@@ -15,4 +16,6 @@ public interface RecordRepository extends JpaRepository<Record, String> {
             String userId, String requestingMember, String providingMember, String resourceType);
 
     Record findByOrderId(String id);
+
+    List<Record> findByStateEquals(OrderState state);
 }

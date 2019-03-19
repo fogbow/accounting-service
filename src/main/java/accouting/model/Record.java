@@ -43,6 +43,9 @@ public class Record {
 	@Column(nullable = false)
 	private long duration = -1;
 
+	@Column
+	private OrderState state;
+
 	public Long getId() {
 		return id;
 	}
@@ -156,6 +159,15 @@ public class Record {
 		this.providingMember = providingMember;
 		this.startTime = startTime;
 		this.duration = -1;
+		this.state = OrderState.FULFILLED;
+	}
+
+	public OrderState getState() {
+		return state;
+	}
+
+	public void setState(OrderState newState) {
+		this.state = newState;
 	}
 
 	public Record() {}
