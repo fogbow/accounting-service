@@ -1,6 +1,8 @@
 package accouting.processors;
 
 import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -14,7 +16,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class SyncProcessor implements Runnable {
-	private static final int SLEEP_TIME = 600000; // One hour
+	private static final int SLEEP_TIME = 60000; // One hour
 	private static final Logger logger = LoggerFactory.getLogger(SyncProcessor.class);
 
 	private AuditableOrderIdRecorder idRecorder;
@@ -47,64 +49,40 @@ public class SyncProcessor implements Runnable {
 		}
 	}
 
-//	private void retriveAndSave() {
-//		List<Order> orders = this.dbManager.getAllOrders();
-//
-//		for(Order ord : orders) {
-//			if(!dbManager.existsRecordByOrderId(ord.getId())) {
-//				Record rec = extractRecord(ord);
-//
-//				if(ord.getOrderState().equals(OrderState.CLOSED)) {
-//					rec.setDuration(0);
-//				}
-//
-//				dbManager.saveRecord(rec);
-//			}
-//		}
-//
-//	}
-
 	private void retriveAndSave() {
-		List<AuditableOrderStateChange> auditableOrders = dbManager.getAllAuditableOrdersFromCurrentId(idRecorder.getCurrentId());
-
+			List<AuditableOrderStateChange> auditableOrders = dbManager.getAllAuditableOrdersFromCurrentId(idRecorder.getCurrentId());
+		System.out.println(idRecorder.getCurrentId());
+		System.out.println("that wass the current id");
 		for(AuditableOrderStateChange auditOrder : auditableOrders) {
 			refreshRecord(auditOrder);
 		}
 
-		updateRecords();
-	}
+		int auditableOrdersSize = auditableOrders.size();
 
-	private void updateRecords() {
-		List<Record> records = dbManager.getFullFilledRecords();
-
-		for(Record rec : records) {
-			long now = new Date().getTime();
-			long currentDuration = rec.getDuration();
-
-			if(currentDuration > 0) {
-				rec.setDuration(currentDuration + (now - currentDuration));
-			} else {
-				rec.setDuration(now - rec.getStartTime().getTime());
-			}
-		}
+		if(auditableOrdersSize > 0)
+			idRecorder.setCurrentId(auditableOrders.get(auditableOrdersSize-1).getId());
+		dbManager.saveIdRecorder(idRecorder);
 	}
 
 	private void refreshRecord(AuditableOrderStateChange auditOrder) {
 		Record rec = dbManager.getRecordByOrderId(auditOrder.getOrder().getId());
 
 		if(rec == null) {
-			if(auditOrder.getNewState().equals(OrderState.FULFILLED)) {
-				createRecord(auditOrder);
-			}
+			createRecord(auditOrder);
 		} else {
 			if(orderIsClosed(auditOrder.getNewState())) {
 				rec.setState(auditOrder.getNewState());
+				rec.setEndTime(auditOrder.getTimestamp());
+				rec.setDuration(rec.getEndTime().getTime() - rec.getStartTime().getTime());
+				dbManager.saveRecord(rec);
 			}
 		}
 	}
 
 	private void createRecord(AuditableOrderStateChange auditOrder) {
 		Order ord = auditOrder.getOrder();
+
+		Timestamp startTime = getFilteredTimestamp(auditOrder.getTimestamp());
 		Record rec = new Record(
 				ord.getId(),
 				ord.getClass().getName(),
@@ -113,11 +91,30 @@ public class SyncProcessor implements Runnable {
 				"",
 				ord.getRequester(),
 				ord.getProvider(),
-				auditOrder.getTimestamp()
+				startTime
 		);
-		long now = new Date().getTime();
-		rec.setDuration(now - rec.getStartTime().getTime());
+
+		rec.setState(auditOrder.getNewState());
+
+		if(orderIsClosed(auditOrder.getNewState())) {
+			rec.setDuration(rec.getEndTime().getTime() - rec.getStartTime().getTime());
+		}
+
 		dbManager.saveRecord(rec);
+	}
+
+	private Timestamp getFilteredTimestamp(Timestamp auditTimestamp) {
+		Timestamp filteredTimestamp;
+
+		try {
+			Date tst = auditTimestamp;
+			Date filteredDate = new SimpleDateFormat("yyyy-MM-dd").parse(tst.toString().split(" ")[0]);
+			filteredTimestamp = new Timestamp(filteredDate.getTime());
+		} catch (ParseException pe) {
+			filteredTimestamp = auditTimestamp;
+		}
+
+		return filteredTimestamp;
 	}
 
 	private boolean orderIsClosed(OrderState state) {

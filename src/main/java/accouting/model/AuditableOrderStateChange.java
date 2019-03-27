@@ -7,7 +7,7 @@ import java.sql.Timestamp;
 
 @Entity
 @Table(name = "state_change_event")
-@SequenceGenerator(name="seq", initialValue=1)
+@SequenceGenerator(name="seq", initialValue=1, allocationSize = 1)
 public class AuditableOrderStateChange {
     @Id
     @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="seq")
@@ -49,6 +49,10 @@ public class AuditableOrderStateChange {
 
     public OrderState getNewState() {
         return newState;
+    }
+
+    public Long getId() {
+        return id;
     }
 }
 

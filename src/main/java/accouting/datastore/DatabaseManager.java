@@ -5,6 +5,7 @@ import accouting.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 @Component
@@ -46,7 +47,7 @@ public class DatabaseManager {
     }
 
     public List<AuditableOrderStateChange> getAllAuditableOrdersFromCurrentId(Long id) {
-        return auditableOrderStateChangeRepository.findByIdGreaterThan(id);
+        return auditableOrderStateChangeRepository.findByIdGreaterThanOrderByIdAsc(id);
     }
 
     public Record getRecordByOrderId(String orderId) {
@@ -59,13 +60,29 @@ public class DatabaseManager {
         if(idRecorder == null) {
             idRecorder = new AuditableOrderIdRecorder();
             idRecorder.setId(SystemConstants.ID_RECORDER_KEY);
-            idRecorder.setCurrentId((new Long(1)));
+            idRecorder.setCurrentId((new Long(0)));
         }
 
         return idRecorder;
     }
 
+    public void saveIdRecorder(AuditableOrderIdRecorder idRecorder) {
+        auditableOrderIdRecorderRepository.save(idRecorder);
+    }
+
     public List<Record> getFullFilledRecords() {
         return recordRepository.findByStateEquals(OrderState.FULFILLED);
+    }
+
+    public List<Record> getOpenedRecords(String userId, String requestingMember, String providingMember, String resourceType, Timestamp startTime, Timestamp endTime) {
+        return recordRepository.findByUserIdAndRequestingMemberAndProvidingMemberAndResourceTypeAndStartTimeLessThanEqualAndStartTimeGreaterThanEqualAndStateEquals(
+                userId, requestingMember, providingMember, resourceType, endTime, startTime, OrderState.FULFILLED
+        );
+    }
+
+    public List<Record> getClosedRecords(String userId, String requestingMember, String providingMember, String resourceType, Timestamp beginTime, Timestamp endTime) {
+        return recordRepository.findByUserIdAndRequestingMemberAndProvidingMemberAndResourceTypeAndStartTimeLessThanEqualAndEndTimeGreaterThanEqual(
+                userId, requestingMember, providingMember, resourceType, endTime, beginTime
+        );
     }
 }

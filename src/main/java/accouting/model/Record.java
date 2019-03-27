@@ -39,6 +39,9 @@ public class Record {
 	
 	@Column(nullable = false)
 	private Timestamp startTime;
+
+	@Column
+	private Timestamp endTime;
 	
 	@Column(nullable = false)
 	private long duration = -1;
@@ -92,6 +95,14 @@ public class Record {
 
 	public void setUserName(String userName) {
 		this.userName = userName;
+	}
+
+	public void setEndTime(Timestamp endTime) {
+		this.endTime = endTime;
+	}
+
+	public Timestamp getEndTime() {
+		return endTime;
 	}
 
 	@Override

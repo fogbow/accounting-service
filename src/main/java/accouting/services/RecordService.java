@@ -2,6 +2,7 @@ package accouting.services;
 
 import accouting.authentication.AccountingPublicKeysHolder;
 import accouting.datastore.DatabaseManager;
+import accouting.exceptions.InvalidIntervalException;
 import accouting.model.Record;
 import cloud.fogbow.as.core.util.AuthenticationUtil;
 import cloud.fogbow.common.models.SystemUser;
@@ -26,48 +27,42 @@ public class RecordService {
 
         Date initialDate = new SimpleDateFormat("yyyy-MM-dd").parse(beginPeriod);
         Timestamp begin = new Timestamp(initialDate.getTime());
+        System.out.println("timeeeeeeeeee");
+        System.out.println(begin);
 
         Date finalDate = new SimpleDateFormat("yyyy-MM-dd").parse(endPeriod);
         Timestamp end = new Timestamp(finalDate.getTime());
 
-        List<Record> records = dbManager.getRecords(userId, requestingMember, providingMember, resourceType);
+        checkInterval(begin, end);
 
-        for (Record rec : records) {
-            rec.setDuration(getRealDuration(rec, begin, end));
-        }
+        List<Record> closedRecords = dbManager.getClosedRecords(userId, requestingMember, providingMember, resourceType, begin, end);
+        List<Record> openedRecords = dbManager.getOpenedRecords(userId, requestingMember, providingMember, resourceType, begin, end);
+
+        setOpenedRecordsDuration(openedRecords);
+
+        openedRecords.addAll(closedRecords);
+        List<Record> records = openedRecords;
 
         return records;
     }
 
-    private long getRealDuration(Record record, Timestamp begin, Timestamp end) {
+    private void setOpenedRecordsDuration(List<Record> openedRecords) {
+        long now = new Date().getTime();
 
-        long currentDuration = record.getDuration();
-
-        // Order not closed, so the current duration of order is now - start_time
-        if (currentDuration == -1) {
-            long now = new Date().getTime();
-            currentDuration = now - record.getStartTime().getTime();
+        for(Record rec : openedRecords) {
+            rec.setDuration(now - rec.getStartTime().getTime());
         }
-
-        long newDuration = currentDuration;
-
-        // Calculates the real duration, i.e when the order was fulfilled in interest interval.
-        if (record.getStartTime().before(begin)) {
-            newDuration -= begin.getTime() - record.getStartTime().getTime();
-        }
-
-        if (end.getTime() < record.getStartTime().getTime() + currentDuration) {
-            newDuration -= (record.getStartTime().getTime() + currentDuration) - end.getTime();
-        }
-
-        return Math.max(0,newDuration);
     }
 
-    /**
-     * When the SyncProcessor wakes up, retrieve all orders and for each order get all autidableOrderStateChange and treats the following cases:
-     * If there is no record for that order, create one and handle the duration field. If there is, handle the duration field.
-     * By handle the duration field u gotta do:
-     * retrieve all auditableOrderStateChange and decide what to do.
-     */
-
+    private void checkInterval(Timestamp begin, Timestamp end) {
+        long now = new Date().getTime();
+        System.out.println(now);
+        System.out.println(begin.getTime());
+        System.out.println(end.getTime());
+        if(begin.getTime() > end.getTime()) {
+            throw new InvalidIntervalException("Begin time must not be greater than end time");
+        } else if(end.getTime() > now || begin.getTime() > now) {
+            throw new InvalidIntervalException("Billing predictions are not allowed");
+        }
+    }
 }
