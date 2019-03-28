@@ -105,28 +105,6 @@ public class Record {
 		return endTime;
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		Record record = (Record) o;
-		return duration == record.duration &&
-				id.equals(record.id) &&
-				Objects.equals(orderId, record.orderId) &&
-				Objects.equals(resourceType, record.resourceType) &&
-				Objects.equals(spec, record.spec) &&
-				Objects.equals(userId, record.userId) &&
-				Objects.equals(userName, record.userName) &&
-				Objects.equals(requestingMember, record.requestingMember) &&
-				Objects.equals(providingMember, record.providingMember) &&
-				Objects.equals(startTime, record.startTime);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(id, orderId, resourceType, spec, userId, userName, requestingMember, providingMember, startTime, duration);
-	}
-
 	public String getRequestingMember() {
 		return requestingMember;
 	}
@@ -159,6 +137,36 @@ public class Record {
 		this.duration = duration;
 	}
 
+	public OrderState getState() {
+		return state;
+	}
+
+	public void setState(OrderState newState) {
+		this.state = newState;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Record record = (Record) o;
+		return duration == record.duration &&
+				id.equals(record.id) &&
+				Objects.equals(orderId, record.orderId) &&
+				Objects.equals(resourceType, record.resourceType) &&
+				Objects.equals(spec, record.spec) &&
+				Objects.equals(userId, record.userId) &&
+				Objects.equals(userName, record.userName) &&
+				Objects.equals(requestingMember, record.requestingMember) &&
+				Objects.equals(providingMember, record.providingMember) &&
+				Objects.equals(startTime, record.startTime);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id, orderId, resourceType, spec, userId, userName, requestingMember, providingMember, startTime, duration);
+	}
+
 	public Record(String orderId, String resourceType, String spec, String userId, String userName,
 				  String requestingMember, String providingMember, Timestamp startTime) {
 		this.orderId = orderId;
@@ -171,14 +179,6 @@ public class Record {
 		this.startTime = startTime;
 		this.duration = -1;
 		this.state = OrderState.FULFILLED;
-	}
-
-	public OrderState getState() {
-		return state;
-	}
-
-	public void setState(OrderState newState) {
-		this.state = newState;
 	}
 
 	public Record() {}

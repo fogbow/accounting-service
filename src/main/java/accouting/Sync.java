@@ -17,7 +17,7 @@ public class Sync {
 	SyncProcessor syncProcess;
 
 	@PostConstruct
-	public void tst() {
+	public void procStarter() {
 		new Thread(syncProcess).start();
 	}
 }

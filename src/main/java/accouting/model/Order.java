@@ -20,6 +20,31 @@ public class Order implements Serializable {
     protected static final String INSTANCE_ID_COLUMN_NAME = "instance_id";
     protected static final int FIELDS_MAX_SIZE = 255;
 
+    @Column
+    @Id
+    @Size(max = ID_FIXED_SIZE)
+    private String id;
+
+    @Column
+    @Enumerated(EnumType.STRING)
+    private OrderState orderState;
+
+    @Column(name = REQUESTER_COLUMN_NAME)
+    @Size(max = FIELDS_MAX_SIZE)
+    private String requester;
+
+    @Column(name = PROVIDER_COLUMN_NAME)
+    @Size(max = FIELDS_MAX_SIZE)
+    private String provider;
+
+    @Column(name = CLOUD_NAME_COLUMN_NAME)
+    @Size(max = FIELDS_MAX_SIZE)
+    private String cloudName;
+
+    @Column(name = INSTANCE_ID_COLUMN_NAME)
+    @Size(max = FIELDS_MAX_SIZE)
+    private String instanceId;
+
     public OrderState getOrderState() {
         return orderState;
     }
@@ -59,31 +84,6 @@ public class Order implements Serializable {
     public void setInstanceId(String instanceId) {
         this.instanceId = instanceId;
     }
-
-    @Column
-    @Id
-    @Size(max = ID_FIXED_SIZE)
-    private String id;
-
-    @Column
-    @Enumerated(EnumType.STRING)
-    private OrderState orderState;
-
-    @Column(name = REQUESTER_COLUMN_NAME)
-    @Size(max = FIELDS_MAX_SIZE)
-    private String requester;
-
-    @Column(name = PROVIDER_COLUMN_NAME)
-    @Size(max = FIELDS_MAX_SIZE)
-    private String provider;
-
-    @Column(name = CLOUD_NAME_COLUMN_NAME)
-    @Size(max = FIELDS_MAX_SIZE)
-    private String cloudName;
-
-    @Column(name = INSTANCE_ID_COLUMN_NAME)
-    @Size(max = FIELDS_MAX_SIZE)
-    private String instanceId;
 
     public static int getIdFixedSize() {
         return ID_FIXED_SIZE;

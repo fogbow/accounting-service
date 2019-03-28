@@ -11,11 +11,8 @@ import java.util.List;
 
 @Repository
 public interface RecordRepository extends JpaRepository<Record, String> {
-    List<Record> findByUserId(String userId);
 
     Record findByOrderId(String id);
-
-    List<Record> findByStateEquals(OrderState state);
 
     List<Record> findByUserIdAndRequestingMemberAndProvidingMemberAndResourceTypeAndStartTimeLessThanEqualAndEndTimeGreaterThanEqual(
             String userId, String requestingMember, String providingMember, String resourceType, Timestamp endTime, Timestamp startTime);

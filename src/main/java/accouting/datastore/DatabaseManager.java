@@ -23,27 +23,8 @@ public class DatabaseManager {
     @Autowired
     private AuditableOrderIdRecorderRepository auditableOrderIdRecorderRepository;
 
-    public List<Record> getUserRecords(String userId) {
-        return recordRepository.findByUserId(userId);
-    }
-
     public void saveRecord(Record record) {
         recordRepository.save(record);
-    }
-
-    public List<Record> getRecords(String userId, String requestingMember, String providingMember, String resourceType) {
-        return recordRepository.findByUserId(
-                userId
-        );
-    }
-
-    public List<Order> getAllOrders() {
-        return orderRepository.findAll();
-    }
-
-
-    public boolean existsRecordByOrderId(String id) {
-        return recordRepository.findByOrderId(id) != null;
     }
 
     public List<AuditableOrderStateChange> getAllAuditableOrdersFromCurrentId(Long id) {
@@ -60,7 +41,7 @@ public class DatabaseManager {
         if(idRecorder == null) {
             idRecorder = new AuditableOrderIdRecorder();
             idRecorder.setId(SystemConstants.ID_RECORDER_KEY);
-            idRecorder.setCurrentId((new Long(0)));
+            idRecorder.setCurrentId((0L));
         }
 
         return idRecorder;
@@ -68,10 +49,6 @@ public class DatabaseManager {
 
     public void saveIdRecorder(AuditableOrderIdRecorder idRecorder) {
         auditableOrderIdRecorderRepository.save(idRecorder);
-    }
-
-    public List<Record> getFullFilledRecords() {
-        return recordRepository.findByStateEquals(OrderState.FULFILLED);
     }
 
     public List<Record> getOpenedRecords(String userId, String requestingMember, String providingMember, String resourceType, Timestamp startTime, Timestamp endTime) {
