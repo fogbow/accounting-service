@@ -1,8 +1,9 @@
 package accouting.api.http;
 
 import accouting.constants.SystemConstants;
+import accouting.models.AccountingOperationType;
 import accouting.services.RecordService;
-import accouting.model.Record;
+import accouting.models.Record;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,8 +20,8 @@ public class ResourceUsageController {
     @Autowired
     private RecordService recordService;
 
-    @RequestMapping(value = "/{userId}/{requestingMember}/{providingMember}/{resourceType}/{initialDate}/{finalDate}", method = RequestMethod.GET)
-    public ResponseEntity<List<Record>> getResourceUsageFromUser(
+    @RequestMapping(value = "/other/{userId}/{requestingMember}/{providingMember}/{resourceType}/{initialDate}/{finalDate}", method = RequestMethod.GET)
+    public ResponseEntity<List<Record>> getResourceUsageFromOtherUser(
             @PathVariable String userId,
             @PathVariable String requestingMember,
             @PathVariable String providingMember,
@@ -30,6 +31,20 @@ public class ResourceUsageController {
             @RequestHeader(value = SystemConstants.SYSTEM_USER_TOKEN_HEADER_KEY) String systemUserToken
     ) throws Exception{
         return new ResponseEntity<List<Record>>(recordService.getUserRecords(
-                userId, requestingMember, providingMember, resourceType, initialDate, finalDate, systemUserToken), HttpStatus.OK);
+                userId, requestingMember, providingMember, resourceType, initialDate, finalDate, systemUserToken, AccountingOperationType.OTHERS_BILLING), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/self/{userId}/{requestingMember}/{providingMember}/{resourceType}/{initialDate}/{finalDate}", method = RequestMethod.GET)
+    public ResponseEntity<List<Record>> getResourceUsageFromSystemUser(
+            @PathVariable String userId,
+            @PathVariable String requestingMember,
+            @PathVariable String providingMember,
+            @PathVariable String resourceType,
+            @PathVariable String initialDate,
+            @PathVariable String finalDate,
+            @RequestHeader(value = SystemConstants.SYSTEM_USER_TOKEN_HEADER_KEY) String systemUserToken
+    ) throws Exception{
+        return new ResponseEntity<List<Record>>(recordService.getUserRecords(
+                userId, requestingMember, providingMember, resourceType, initialDate, finalDate, systemUserToken, AccountingOperationType.OWN_BILLING), HttpStatus.OK);
     }
 }

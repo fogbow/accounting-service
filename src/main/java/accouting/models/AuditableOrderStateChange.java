@@ -1,6 +1,4 @@
-package accouting.model;
-
-import org.apache.log4j.Logger;
+package accouting.models;
 
 import javax.persistence.*;
 import java.sql.Timestamp;

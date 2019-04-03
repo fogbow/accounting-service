@@ -1,6 +1,6 @@
 package accouting.api.http;
 
-import accouting.model.PublicKey;
+import accouting.models.PublicKey;
 import accouting.services.PublicKeyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

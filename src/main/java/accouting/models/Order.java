@@ -1,4 +1,4 @@
-package accouting.model;
+package accouting.models;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
@@ -44,6 +44,14 @@ public class Order implements Serializable {
     @Column(name = INSTANCE_ID_COLUMN_NAME)
     @Size(max = FIELDS_MAX_SIZE)
     private String instanceId;
+
+    @Column
+    @Size(max = FIELDS_MAX_SIZE)
+    private String userId;
+
+    @Column
+    @Enumerated(EnumType.STRING)
+    protected ResourceType type;
 
     public OrderState getOrderState() {
         return orderState;
@@ -112,6 +120,22 @@ public class Order implements Serializable {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getUserId() {
+        return this.userId;
+    }
+
+    public ResourceType getType() {
+        return this.type;
+    }
+
+    public void setType(ResourceType type) {
+        this.type = type;
     }
 
     public Order() {

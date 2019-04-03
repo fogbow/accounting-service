@@ -7,7 +7,7 @@ import java.util.Date;
 import java.util.List;
 
 import accouting.datastore.DatabaseManager;
-import accouting.model.*;
+import accouting.models.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,9 +85,9 @@ public class SyncProcessor implements Runnable {
 		Timestamp startTime = getStartTimestamp(auditOrder.getTimestamp());
 		Record rec = new Record(
 				ord.getId(),
-				ord.getClass().getName(),
+				ord.getType().getValue(),
 				"",
-				"fogbow-mapper-test",
+				ord.getUserId(),
 				"",
 				ord.getRequester(),
 				ord.getProvider(),

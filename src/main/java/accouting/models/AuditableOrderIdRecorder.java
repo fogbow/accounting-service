@@ -1,4 +1,4 @@
-package accouting.model;
+package accouting.models;
 
 import javax.persistence.*;
 

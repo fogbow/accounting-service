@@ -3,9 +3,15 @@ package accouting.services;
 import accouting.authentication.AccountingPublicKeysHolder;
 import accouting.datastore.DatabaseManager;
 import accouting.exceptions.InvalidIntervalException;
-import accouting.model.Record;
+import accouting.models.AccountingOperation;
+import accouting.models.AccountingOperationType;
+import accouting.models.Record;
+import accouting.plugins.AccountingAuthPlugin;
 import cloud.fogbow.as.core.util.AuthenticationUtil;
+import cloud.fogbow.common.exceptions.UnauthorizedRequestException;
+import cloud.fogbow.common.exceptions.UnexpectedException;
 import cloud.fogbow.common.models.SystemUser;
+import cloud.fogbow.common.plugins.authorization.AuthorizationPlugin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,10 +26,16 @@ public class RecordService {
     @Autowired
     private DatabaseManager dbManager;
 
+    private AuthorizationPlugin authPlugin = new AccountingAuthPlugin();
+
     public List<Record> getUserRecords(String userId, String requestingMember, String providingMember,
-                                       String resourceType, String intervalStart, String intervalEnd, String systemUserToken) throws Exception{
+                                       String resourceType, String intervalStart, String intervalEnd, String systemUserToken, AccountingOperationType operationType) throws Exception{
         SystemUser requester = AuthenticationUtil.authenticate(
                 AccountingPublicKeysHolder.getInstance().getAsPublicKey(), systemUserToken);
+
+        AccountingOperation operation = new AccountingOperation(operationType, userId);
+
+        checkAuthorization(requester, operation);
 
         Date initialDate = new SimpleDateFormat("yyyy-MM-dd").parse(intervalStart);
         Timestamp begin = new Timestamp(initialDate.getTime());
@@ -59,6 +71,12 @@ public class RecordService {
             throw new InvalidIntervalException("Begin time must not be greater than end time");
         } else if(end.getTime() > now || begin.getTime() > now) {
             throw new InvalidIntervalException("Billing predictions are not allowed");
+        }
+    }
+
+    private void checkAuthorization(SystemUser systemUser, AccountingOperation operation) throws UnauthorizedRequestException, UnexpectedException {
+        if(!authPlugin.isAuthorized(systemUser, operation)) {
+            throw new UnauthorizedRequestException("The user is not authorized to do this operation");
         }
     }
 }

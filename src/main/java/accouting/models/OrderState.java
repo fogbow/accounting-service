@@ -1,4 +1,4 @@
-package accouting.model;
+package accouting.models;
 
 public enum OrderState {
     OPEN("OPEN"),

@@ -1,9 +1,9 @@
 package accouting.datastore;
 
-import accouting.model.OrderState;
+import accouting.models.OrderState;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import accouting.model.Record;
+import accouting.models.Record;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Timestamp;

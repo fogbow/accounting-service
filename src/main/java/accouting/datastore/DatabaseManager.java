@@ -1,7 +1,7 @@
 package accouting.datastore;
 
 import accouting.constants.SystemConstants;
-import accouting.model.*;
+import accouting.models.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

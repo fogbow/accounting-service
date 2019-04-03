@@ -1,6 +1,6 @@
 package accouting.datastore;
 
-import accouting.model.AuditableOrderStateChange;
+import accouting.models.AuditableOrderStateChange;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
