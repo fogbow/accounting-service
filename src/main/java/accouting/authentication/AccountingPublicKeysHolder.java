@@ -1,6 +1,7 @@
 package accouting.authentication;
 
 import accouting.constants.ConfigurationPropertyKeys;
+import accouting.util.PropertiesHolder;
 import cloud.fogbow.common.constants.HttpMethod;
 import cloud.fogbow.common.exceptions.ConfigurationErrorException;
 import cloud.fogbow.common.exceptions.FogbowException;

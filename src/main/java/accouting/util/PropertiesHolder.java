@@ -1,4 +1,4 @@
-package accouting.authentication;
+package accouting.util;
 
 import accouting.constants.SystemConstants;
 import cloud.fogbow.common.exceptions.FatalErrorException;

@@ -1,6 +1,6 @@
 package accouting;
 
-import accouting.authentication.PropertiesHolder;
+import accouting.util.PropertiesHolder;
 import cloud.fogbow.common.constants.FogbowConstants;
 import cloud.fogbow.common.util.ServiceAsymmetricKeysHolder;
 import org.springframework.boot.ApplicationArguments;
