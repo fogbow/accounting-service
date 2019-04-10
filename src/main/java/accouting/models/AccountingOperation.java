@@ -17,11 +17,11 @@ public class AccountingOperation extends FogbowOperation {
     /**
      * The user who can do the operation even if the userName isn't in the white list
      */
-    private String userName;
+    private String userId;
 
-    public AccountingOperation(AccountingOperationType type, String userName) {
+    public AccountingOperation(AccountingOperationType type, String userId) {
         this.type = type;
-        this.userName = userName;
+        this.userId = userId;
     }
 
     public List<String> getAllowedUsers() {
@@ -34,7 +34,7 @@ public class AccountingOperation extends FogbowOperation {
                 LOGGER.warn(String.format(Messages.Warn.ERROR_READING_CONF_FILE, SystemConstants.WHITE_LIST_FILE), e);
             }
         } else {
-            allowedUsers.add(userName);
+            allowedUsers.add(userId);
         }
 
         return allowedUsers;

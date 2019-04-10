@@ -8,19 +8,6 @@ import cloud.fogbow.common.plugins.authorization.AuthorizationPlugin;
 
 public class AccountingAuthPlugin implements AuthorizationPlugin<AccountingOperation> {
 
-
-    @Override
-    public boolean isAuthorized(SystemUser systemUserToken, String cloudName, String operation, String type)
-            throws UnauthorizedRequestException, UnexpectedException {
-        return true;
-    }
-
-    @Override
-    public boolean isAuthorized(SystemUser systemUserToken, String operation, String type)
-            throws UnauthorizedRequestException, UnexpectedException {
-        return true;
-    }
-
     @Override
     public boolean isAuthorized(SystemUser systemUser, AccountingOperation operation) {
         return operation.getAllowedUsers().stream()
