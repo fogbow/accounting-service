@@ -7,18 +7,16 @@ import java.util.Date;
 import java.util.List;
 
 import cloud.fogbow.accouting.datastore.DatabaseManager;
-import cloud.fogbow.accouting.datastore.OrderRepository;
-import cloud.fogbow.accouting.models.*;
 import cloud.fogbow.accouting.models.AuditableOrderIdRecorder;
 import cloud.fogbow.accouting.models.AuditableOrderStateChange;
-import cloud.fogbow.accouting.models.OrderState;
+import cloud.fogbow.accouting.models.orders.OrderState;
 import cloud.fogbow.accouting.models.Record;
 import cloud.fogbow.accouting.models.specs.SpecFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import cloud.fogbow.accouting.models.Order;
+import cloud.fogbow.accouting.models.orders.Order;
 
 
 @Component

@@ -2,7 +2,8 @@ package cloud.fogbow.accouting.models;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
-import cloud.fogbow.accouting.models.Order;
+import cloud.fogbow.accouting.models.orders.Order;
+import cloud.fogbow.accouting.models.orders.OrderState;
 
 @Entity
 @Table(name = "state_change_event")

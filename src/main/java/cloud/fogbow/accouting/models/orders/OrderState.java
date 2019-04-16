@@ -1,4 +1,4 @@
-package cloud.fogbow.accouting.models;
+package cloud.fogbow.accouting.models.orders;
 
 public enum OrderState {
     OPEN("OPEN"),

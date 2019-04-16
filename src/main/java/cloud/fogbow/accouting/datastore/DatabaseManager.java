@@ -1,11 +1,11 @@
 package cloud.fogbow.accouting.datastore;
 
 import cloud.fogbow.accouting.constants.SystemConstants;
-import cloud.fogbow.accouting.models.*;
 import cloud.fogbow.accouting.models.AuditableOrderIdRecorder;
 import cloud.fogbow.accouting.models.AuditableOrderStateChange;
-import cloud.fogbow.accouting.models.OrderState;
+import cloud.fogbow.accouting.models.orders.OrderState;
 import cloud.fogbow.accouting.models.Record;
+import cloud.fogbow.accouting.models.orders.Order;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

@@ -1,6 +1,6 @@
 package cloud.fogbow.accouting.datastore;
 
-import cloud.fogbow.accouting.models.OrderState;
+import cloud.fogbow.accouting.models.orders.OrderState;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import cloud.fogbow.accouting.models.Record;

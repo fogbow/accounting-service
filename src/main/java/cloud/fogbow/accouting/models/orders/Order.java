@@ -1,4 +1,6 @@
-package cloud.fogbow.accouting.models;
+package cloud.fogbow.accouting.models.orders;
+
+import cloud.fogbow.accouting.models.ResourceType;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;

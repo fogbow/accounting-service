@@ -1,6 +1,10 @@
 package cloud.fogbow.accouting.models.specs;
 
 import cloud.fogbow.accouting.models.*;
+import cloud.fogbow.accouting.models.orders.ComputeOrder;
+import cloud.fogbow.accouting.models.orders.NetworkOrder;
+import cloud.fogbow.accouting.models.orders.Order;
+import cloud.fogbow.accouting.models.orders.VolumeOrder;
 
 public class SpecFactory {
     private final String COMPUTE_TYPE = "compute";

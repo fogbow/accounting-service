@@ -1,6 +1,5 @@
-package cloud.fogbow.accouting.models;
+package cloud.fogbow.accouting.models.orders;
 
-import cloud.fogbow.common.models.SystemUser;
 import org.apache.log4j.Logger;
 
 import javax.persistence.*;

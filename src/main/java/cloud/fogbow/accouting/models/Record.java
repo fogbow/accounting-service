@@ -1,5 +1,6 @@
 package cloud.fogbow.accouting.models;
 
+import cloud.fogbow.accouting.models.orders.OrderState;
 import cloud.fogbow.accouting.models.specs.OrderSpec;
 
 import javax.persistence.*;

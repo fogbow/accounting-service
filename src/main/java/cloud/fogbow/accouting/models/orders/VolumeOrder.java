@@ -1,4 +1,4 @@
-package cloud.fogbow.accouting.models;
+package cloud.fogbow.accouting.models.orders;
 
 import org.apache.log4j.Logger;
 
