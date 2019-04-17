@@ -93,7 +93,6 @@ public class SyncProcessor implements Runnable {
 				ord.getId(),
 				ord.getType().getValue(),
 				specFactory.constructSpec(ord),
-				ord.getUserId(),
 				"",
 				ord.getRequester(),
 				ord.getProvider(),

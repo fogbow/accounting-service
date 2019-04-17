@@ -3,9 +3,7 @@ package cloud.fogbow.accouting.services;
 import cloud.fogbow.accouting.authentication.AccountingPublicKeysHolder;
 import cloud.fogbow.accouting.datastore.DatabaseManager;
 import cloud.fogbow.accouting.exceptions.InvalidIntervalException;
-import cloud.fogbow.accouting.models.AccountingOperation;
-import cloud.fogbow.accouting.models.AccountingOperationType;
-import cloud.fogbow.accouting.models.Record;
+import cloud.fogbow.accouting.models.*;
 import cloud.fogbow.accouting.plugins.AccountingAuthPlugin;
 import cloud.fogbow.as.core.util.AuthenticationUtil;
 import cloud.fogbow.common.exceptions.UnauthorizedRequestException;
@@ -45,8 +43,12 @@ public class RecordService {
 
         checkInterval(begin, end);
 
-        List<Record> closedRecords = dbManager.getClosedRecords(userId, requestingMember, providingMember, resourceType, begin, end);
-        List<Record> openedRecords = dbManager.getOpenedRecords(userId, requestingMember, providingMember, resourceType, begin, end);
+        AccountingUser user = new AccountingUser(
+                new UserIdentity(providingMember, userId)
+        );
+
+        List<Record> closedRecords = dbManager.getClosedRecords(user, requestingMember, providingMember, resourceType, begin, end);
+        List<Record> openedRecords = dbManager.getOpenedRecords(user, requestingMember, providingMember, resourceType, begin, end);
 
         setOpenedRecordsDuration(openedRecords);
 

@@ -29,12 +29,6 @@ public class Record {
 	private OrderSpec spec;
 	
 	@Column(nullable = false)
-	private String userId;
-	
-	@Column(nullable = false)
-	private String userName;
-	
-	@Column(nullable = false)
 	private String requestingMember;
 	
 	@Column(nullable = false)
@@ -54,6 +48,17 @@ public class Record {
 
 	@Column
 	private OrderSpec orderSpec;
+
+	@ManyToOne
+	@JoinColumns({
+			@JoinColumn(
+					name = "provider_id",
+					referencedColumnName = "provider_id"),
+			@JoinColumn(
+					name = "user_key",
+					referencedColumnName = "user_key")
+	})
+	private AccountingUser user;
 
 	public Long getId() {
 		return id;
@@ -85,22 +90,6 @@ public class Record {
 
 	public void setSpec(OrderSpec spec) {
 		this.spec = spec;
-	}
-
-	public String getUserId() {
-		return userId;
-	}
-
-	public void setUserId(String userId) {
-		this.userId = userId;
-	}
-
-	public String getUserName() {
-		return userName;
-	}
-
-	public void setUserName(String userName) {
-		this.userName = userName;
 	}
 
 	public void setEndTime(Timestamp endTime) {
@@ -161,8 +150,6 @@ public class Record {
 				Objects.equals(orderId, record.orderId) &&
 				Objects.equals(resourceType, record.resourceType) &&
 				Objects.equals(spec, record.spec) &&
-				Objects.equals(userId, record.userId) &&
-				Objects.equals(userName, record.userName) &&
 				Objects.equals(requestingMember, record.requestingMember) &&
 				Objects.equals(providingMember, record.providingMember) &&
 				Objects.equals(startTime, record.startTime);
@@ -170,16 +157,14 @@ public class Record {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, orderId, resourceType, spec, userId, userName, requestingMember, providingMember, startTime, duration);
+		return Objects.hash(id, orderId, resourceType, spec, requestingMember, providingMember, startTime, duration);
 	}
 
-	public Record(String orderId, String resourceType, OrderSpec spec, String userId, String userName,
+	public Record(String orderId, String resourceType, OrderSpec spec, String userName,
 				  String requestingMember, String providingMember, Timestamp startTime) {
 		this.orderId = orderId;
 		this.resourceType = resourceType;
 		this.spec = spec;
-		this.userId = userId;
-		this.userName = userName;
 		this.requestingMember = requestingMember;
 		this.providingMember = providingMember;
 		this.startTime = startTime;

@@ -1,10 +1,8 @@
 package cloud.fogbow.accouting.datastore;
 
 import cloud.fogbow.accouting.constants.SystemConstants;
-import cloud.fogbow.accouting.models.AuditableOrderIdRecorder;
-import cloud.fogbow.accouting.models.AuditableOrderStateChange;
+import cloud.fogbow.accouting.models.*;
 import cloud.fogbow.accouting.models.orders.OrderState;
-import cloud.fogbow.accouting.models.Record;
 import cloud.fogbow.accouting.models.orders.Order;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -55,15 +53,15 @@ public class DatabaseManager {
         auditableOrderIdRecorderRepository.save(idRecorder);
     }
 
-    public List<Record> getOpenedRecords(String userId, String requestingMember, String providingMember, String resourceType, Timestamp startTime, Timestamp endTime) {
-        return recordRepository.findByUserIdAndRequestingMemberAndProvidingMemberAndResourceTypeAndStartTimeLessThanEqualAndStartTimeGreaterThanEqualAndStateEquals(
-                userId, requestingMember, providingMember, resourceType, endTime, startTime, OrderState.FULFILLED
+    public List<Record> getOpenedRecords(AccountingUser user, String requestingMember, String providingMember, String resourceType, Timestamp startTime, Timestamp endTime) {
+        return recordRepository.findByUserAndRequestingMemberAndProvidingMemberAndResourceTypeAndStartTimeLessThanEqualAndStartTimeGreaterThanEqualAndStateEquals(
+                user, requestingMember, providingMember, resourceType, endTime, startTime, OrderState.FULFILLED
         );
     }
 
-    public List<Record> getClosedRecords(String userId, String requestingMember, String providingMember, String resourceType, Timestamp beginTime, Timestamp endTime) {
-        return recordRepository.findByUserIdAndRequestingMemberAndProvidingMemberAndResourceTypeAndStartTimeLessThanEqualAndEndTimeGreaterThanEqual(
-                userId, requestingMember, providingMember, resourceType, endTime, beginTime
+    public List<Record> getClosedRecords(AccountingUser user, String requestingMember, String providingMember, String resourceType, Timestamp beginTime, Timestamp endTime) {
+        return recordRepository.findByUserAndRequestingMemberAndProvidingMemberAndResourceTypeAndStartTimeLessThanEqualAndEndTimeGreaterThanEqual(
+                user, requestingMember, providingMember, resourceType, endTime, beginTime
         );
     }
 
