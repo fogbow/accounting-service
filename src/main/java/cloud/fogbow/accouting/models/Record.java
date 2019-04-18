@@ -32,9 +32,6 @@ public class Record {
 	private String requestingMember;
 	
 	@Column(nullable = false)
-	private String providingMember;
-	
-	@Column(nullable = false)
 	private Timestamp startTime;
 
 	@Column
@@ -51,13 +48,8 @@ public class Record {
 
 	@ManyToOne
 	@JoinColumns({
-			@JoinColumn(
-					name = "provider_id",
-					referencedColumnName = "provider_id"),
-			@JoinColumn(
-					name = "user_key",
-					referencedColumnName = "user_key")
-	})
+		@JoinColumn(name = "provider_id", referencedColumnName = "provider_id"),
+		@JoinColumn(name = "user_key", referencedColumnName = "user_key") })
 	private AccountingUser user;
 
 	public Long getId() {
@@ -108,14 +100,6 @@ public class Record {
 		this.requestingMember = requestingMember;
 	}
 
-	public String getProvidingMember() {
-		return providingMember;
-	}
-
-	public void setProvidingMember(String providingMember) {
-		this.providingMember = providingMember;
-	}
-
 	public Timestamp getStartTime() {
 		return startTime;
 	}
@@ -151,25 +135,23 @@ public class Record {
 				Objects.equals(resourceType, record.resourceType) &&
 				Objects.equals(spec, record.spec) &&
 				Objects.equals(requestingMember, record.requestingMember) &&
-				Objects.equals(providingMember, record.providingMember) &&
 				Objects.equals(startTime, record.startTime);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, orderId, resourceType, spec, requestingMember, providingMember, startTime, duration);
+		return Objects.hash(id, orderId, resourceType, spec, requestingMember, startTime, duration);
 	}
 
-	public Record(String orderId, String resourceType, OrderSpec spec, String userName,
-				  String requestingMember, String providingMember, Timestamp startTime) {
+	public Record(String orderId, String resourceType, OrderSpec spec, String requestingMember, Timestamp startTime, AccountingUser user) {
 		this.orderId = orderId;
 		this.resourceType = resourceType;
 		this.spec = spec;
 		this.requestingMember = requestingMember;
-		this.providingMember = providingMember;
 		this.startTime = startTime;
-		this.duration = -1;
+		this.duration = 0;
 		this.state = OrderState.FULFILLED;
+		this.user = user;
 	}
 
 	public Record() {}

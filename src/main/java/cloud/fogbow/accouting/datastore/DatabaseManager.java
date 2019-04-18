@@ -25,6 +25,9 @@ public class DatabaseManager {
     @Autowired
     private AuditableOrderIdRecorderRepository auditableOrderIdRecorderRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     public void saveRecord(Record record) {
         recordRepository.save(record);
     }
@@ -53,19 +56,23 @@ public class DatabaseManager {
         auditableOrderIdRecorderRepository.save(idRecorder);
     }
 
-    public List<Record> getOpenedRecords(AccountingUser user, String requestingMember, String providingMember, String resourceType, Timestamp startTime, Timestamp endTime) {
-        return recordRepository.findByUserAndRequestingMemberAndProvidingMemberAndResourceTypeAndStartTimeLessThanEqualAndStartTimeGreaterThanEqualAndStateEquals(
-                user, requestingMember, providingMember, resourceType, endTime, startTime, OrderState.FULFILLED
+    public List<Record> getOpenedRecords(AccountingUser user, String requestingMember, String resourceType, Timestamp startTime, Timestamp endTime) {
+        return recordRepository.findByUserAndRequestingMemberAndResourceTypeAndStartTimeLessThanEqualAndStartTimeGreaterThanEqualAndStateEquals(
+                user, requestingMember, resourceType, endTime, startTime, OrderState.FULFILLED
         );
     }
 
-    public List<Record> getClosedRecords(AccountingUser user, String requestingMember, String providingMember, String resourceType, Timestamp beginTime, Timestamp endTime) {
-        return recordRepository.findByUserAndRequestingMemberAndProvidingMemberAndResourceTypeAndStartTimeLessThanEqualAndEndTimeGreaterThanEqual(
-                user, requestingMember, providingMember, resourceType, endTime, beginTime
+    public List<Record> getClosedRecords(AccountingUser user, String requestingMember, String resourceType, Timestamp beginTime, Timestamp endTime) {
+        return recordRepository.findByUserAndRequestingMemberAndResourceTypeAndStartTimeLessThanEqualAndEndTimeGreaterThanEqual(
+                user, requestingMember, resourceType, endTime, beginTime
         );
     }
 
     public Order getOrder(String orderId) {
         return orderRepository.findById(orderId);
+    }
+
+    public void saveUser(AccountingUser user) {
+        userRepository.save(user);
     }
 }

@@ -47,8 +47,8 @@ public class RecordService {
                 new UserIdentity(providingMember, userId)
         );
 
-        List<Record> closedRecords = dbManager.getClosedRecords(user, requestingMember, providingMember, resourceType, begin, end);
-        List<Record> openedRecords = dbManager.getOpenedRecords(user, requestingMember, providingMember, resourceType, begin, end);
+        List<Record> closedRecords = dbManager.getClosedRecords(user, requestingMember, resourceType, begin, end);
+        List<Record> openedRecords = dbManager.getOpenedRecords(user, requestingMember, resourceType, begin, end);
 
         setOpenedRecordsDuration(openedRecords);
 

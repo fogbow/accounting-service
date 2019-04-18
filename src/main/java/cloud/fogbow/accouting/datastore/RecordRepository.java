@@ -15,10 +15,10 @@ public interface RecordRepository extends JpaRepository<Record, String> {
 
     Record findByOrderId(String id);
 
-    List<Record> findByUserAndRequestingMemberAndProvidingMemberAndResourceTypeAndStartTimeLessThanEqualAndEndTimeGreaterThanEqual(
-            AccountingUser user, String requestingMember, String providingMember, String resourceType, Timestamp endTime, Timestamp startTime);
+    List<Record> findByUserAndRequestingMemberAndResourceTypeAndStartTimeLessThanEqualAndEndTimeGreaterThanEqual(
+            AccountingUser user, String requestingMember, String resourceType, Timestamp endTime, Timestamp startTime);
 
-    List<Record> findByUserAndRequestingMemberAndProvidingMemberAndResourceTypeAndStartTimeLessThanEqualAndStartTimeGreaterThanEqualAndStateEquals(
-            AccountingUser user, String requestingMember, String providingMember, String resourceType, Timestamp endTime, Timestamp startTime, OrderState state);
+    List<Record> findByUserAndRequestingMemberAndResourceTypeAndStartTimeLessThanEqualAndStartTimeGreaterThanEqualAndStateEquals(
+            AccountingUser user, String requestingMember, String resourceType, Timestamp endTime, Timestamp startTime, OrderState state);
 
 }

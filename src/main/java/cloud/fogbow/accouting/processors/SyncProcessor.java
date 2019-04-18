@@ -7,10 +7,8 @@ import java.util.Date;
 import java.util.List;
 
 import cloud.fogbow.accouting.datastore.DatabaseManager;
-import cloud.fogbow.accouting.models.AuditableOrderIdRecorder;
-import cloud.fogbow.accouting.models.AuditableOrderStateChange;
+import cloud.fogbow.accouting.models.*;
 import cloud.fogbow.accouting.models.orders.OrderState;
-import cloud.fogbow.accouting.models.Record;
 import cloud.fogbow.accouting.models.specs.SpecFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,14 +71,18 @@ public class SyncProcessor implements Runnable {
 	private void alignRecord(AuditableOrderStateChange auditOrder) {
 		Record rec = dbManager.getRecordByOrderId(auditOrder.getOrder().getId());
 
-		if(rec == null) {
+		if(rec == null && auditOrder.getNewState().equals(OrderState.FULFILLED)) {
 			createRecord(auditOrder);
 		} else {
-			if(orderIsClosed(auditOrder.getNewState())) {
+			if(orderHasFinished(auditOrder.getNewState())) {
 				rec.setState(auditOrder.getNewState());
 				rec.setEndTime(auditOrder.getTimestamp());
-				setClosedOrderDuration(auditOrder, rec);
+				setFinishedOrderDuration(auditOrder, rec);
 				dbManager.saveRecord(rec);
+			} else if(auditOrder.getNewState().equals(OrderState.UNABLE_TO_CHECK_STATUS)) {
+				rec.setDuration(auditOrder.getTimestamp().getTime() - rec.getStartTime().getTime());
+			} else if(auditOrder.getNewState().equals(OrderState.FULFILLED)) {
+				rec.setDuration(0);
 			}
 		}
 	}
@@ -89,25 +91,27 @@ public class SyncProcessor implements Runnable {
 		Order ord = auditOrder.getOrder();
 
 		Timestamp startTime = getStartTimestamp(auditOrder.getTimestamp());
+		AccountingUser user = new AccountingUser(
+			new UserIdentity(ord.getProvider(), ord.getUserId())
+		);
+
 		Record rec = new Record(
-				ord.getId(),
-				ord.getType().getValue(),
-				specFactory.constructSpec(ord),
-				"",
-				ord.getRequester(),
-				ord.getProvider(),
-				startTime
+			ord.getId(),
+			ord.getType().getValue(),
+			specFactory.constructSpec(ord),
+			ord.getRequester(),
+			startTime,
+			user
 		);
 
 		rec.setState(auditOrder.getNewState());
 
-		setClosedOrderDuration(auditOrder, rec);
-
+		dbManager.saveUser(user);
 		dbManager.saveRecord(rec);
 	}
 
-	private void setClosedOrderDuration(AuditableOrderStateChange auditOrder, Record rec) {
-		if(orderIsClosed(auditOrder.getNewState())) {
+	private void setFinishedOrderDuration(AuditableOrderStateChange auditOrder, Record rec) {
+		if(orderHasFinished(auditOrder.getNewState()) && rec.getDuration() == 0) {
 			rec.setDuration(rec.getEndTime().getTime() - rec.getStartTime().getTime());
 		}
 	}
@@ -126,9 +130,8 @@ public class SyncProcessor implements Runnable {
 		return startTimestamp;
 	}
 
-	private boolean orderIsClosed(OrderState state) {
-		return state.equals((OrderState.CLOSED)) || state.equals(OrderState.DEACTIVATED)
-				|| state.equals(OrderState.FAILED_AFTER_SUCCESSUL_REQUEST) || state.equals(OrderState.FAILED_ON_REQUEST);
+	private boolean orderHasFinished(OrderState state) {
+		return state.equals((OrderState.CLOSED)) || state.equals(OrderState.FAILED_AFTER_SUCCESSUL_REQUEST);
 	}
 
 }
