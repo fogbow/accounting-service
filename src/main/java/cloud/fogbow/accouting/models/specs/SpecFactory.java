@@ -1,5 +1,7 @@
 package cloud.fogbow.accouting.models.specs;
 
+import cloud.fogbow.accouting.constants.Messages;
+import cloud.fogbow.accouting.exceptions.TypeNotAllowedException;
 import cloud.fogbow.accouting.models.*;
 import cloud.fogbow.accouting.models.orders.ComputeOrder;
 import cloud.fogbow.accouting.models.orders.NetworkOrder;
@@ -7,26 +9,23 @@ import cloud.fogbow.accouting.models.orders.Order;
 import cloud.fogbow.accouting.models.orders.VolumeOrder;
 
 public class SpecFactory {
-    private final String COMPUTE_TYPE = "compute";
-    private final String NETWORK_TYPE = "network";
-    private final String VOLUME_TYPE = "volume";
 
     public OrderSpec constructSpec(Order order) {
         OrderSpec spec;
 
         ResourceType resourceType = order.getType();
-        switch (resourceType.getValue()) {
-            case COMPUTE_TYPE:
+        switch (resourceType) {
+            case COMPUTE:
                 spec = new ComputeSpec(((ComputeOrder) order).getvCPU(), ((ComputeOrder) order).getMemory());
                 break;
-            case NETWORK_TYPE:
+            case NETWORK:
                 spec = new NetworkSpec(((NetworkOrder) order).getCidr(), ((NetworkOrder) order).getAllocationMode());
                 break;
-            case VOLUME_TYPE:
+            case VOLUME:
                 spec = new VolumeSpec(((VolumeOrder) order).getVolumeSize());
                 break;
             default:
-                spec = null;
+                throw new TypeNotAllowedException(String.format(Messages.Exception.TYPE_NOT_ALLOWED_YET, resourceType.getValue()));
         }
 
         return spec;

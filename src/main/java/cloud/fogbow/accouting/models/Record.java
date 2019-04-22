@@ -30,17 +30,18 @@ public class Record {
 	
 	@Column(nullable = false)
 	private String requestingMember;
-	
-	@Column(nullable = false)
+
+	@Column
 	private Timestamp startTime;
 
 	@Column
 	private Timestamp endTime;
 	
-	@Column(nullable = false)
-	private long duration = -1;
+	@Column
+	private long duration = 0;
 
 	@Column
+	@Enumerated(EnumType.STRING)
 	private OrderState state;
 
 	@Column
@@ -149,6 +150,16 @@ public class Record {
 		this.spec = spec;
 		this.requestingMember = requestingMember;
 		this.startTime = startTime;
+		this.duration = 0;
+		this.state = OrderState.FULFILLED;
+		this.user = user;
+	}
+
+	public Record(String orderId, String resourceType, OrderSpec spec, String requestingMember, AccountingUser user) {
+		this.orderId = orderId;
+		this.resourceType = resourceType;
+		this.spec = spec;
+		this.requestingMember = requestingMember;
 		this.duration = 0;
 		this.state = OrderState.FULFILLED;
 		this.user = user;

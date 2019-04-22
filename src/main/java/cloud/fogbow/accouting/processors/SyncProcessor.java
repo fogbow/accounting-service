@@ -10,6 +10,7 @@ import cloud.fogbow.accouting.datastore.DatabaseManager;
 import cloud.fogbow.accouting.models.*;
 import cloud.fogbow.accouting.models.orders.OrderState;
 import cloud.fogbow.accouting.models.specs.SpecFactory;
+import org.aspectj.weaver.ast.Or;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +55,7 @@ public class SyncProcessor implements Runnable {
 	}
 
 	private void checkOrdersHistory() {
+		System.out.println("current id " +idRecorder.getCurrentId());
 		List<AuditableOrderStateChange> auditableOrders = dbManager.getAllAuditableOrdersFromCurrentId(idRecorder.getCurrentId());
 
 		for(AuditableOrderStateChange auditOrder : auditableOrders) {
@@ -63,7 +65,7 @@ public class SyncProcessor implements Runnable {
 		int auditableOrdersSize = auditableOrders.size();
 
 		if(auditableOrdersSize > 0) {
-			idRecorder.setCurrentId(auditableOrders.get(auditableOrdersSize-1).getId());
+			idRecorder.setCurrentId(auditableOrders.get(auditableOrdersSize-1).getId()+1);
 			dbManager.saveIdRecorder(idRecorder);
 		}
 	}
@@ -71,26 +73,30 @@ public class SyncProcessor implements Runnable {
 	private void alignRecord(AuditableOrderStateChange auditOrder) {
 		Record rec = dbManager.getRecordByOrderId(auditOrder.getOrder().getId());
 
-		if(rec == null && auditOrder.getNewState().equals(OrderState.FULFILLED)) {
+		if(rec == null) {
 			createRecord(auditOrder);
 		} else {
 			if(orderHasFinished(auditOrder.getNewState())) {
 				rec.setState(auditOrder.getNewState());
 				rec.setEndTime(auditOrder.getTimestamp());
-				setFinishedOrderDuration(auditOrder, rec);
-				dbManager.saveRecord(rec);
+				setClosedOrderDuration(auditOrder, rec);
 			} else if(auditOrder.getNewState().equals(OrderState.UNABLE_TO_CHECK_STATUS)) {
-				rec.setDuration(auditOrder.getTimestamp().getTime() - rec.getStartTime().getTime());
+				if(rec.getStartTime() != null)
+					rec.setDuration(auditOrder.getTimestamp().getTime() - rec.getStartTime().getTime());
+				rec.setState(auditOrder.getNewState());
 			} else if(auditOrder.getNewState().equals(OrderState.FULFILLED)) {
+				rec.setState(auditOrder.getNewState());
 				rec.setDuration(0);
+				if(rec.getStartTime() == null)
+					rec.setStartTime(getStartTimestamp(auditOrder.getTimestamp()));
 			}
+			dbManager.saveRecord(rec);
 		}
 	}
 
 	private void createRecord(AuditableOrderStateChange auditOrder) {
 		Order ord = auditOrder.getOrder();
 
-		Timestamp startTime = getStartTimestamp(auditOrder.getTimestamp());
 		AccountingUser user = new AccountingUser(
 			new UserIdentity(ord.getProvider(), ord.getUserId())
 		);
@@ -100,9 +106,26 @@ public class SyncProcessor implements Runnable {
 			ord.getType().getValue(),
 			specFactory.constructSpec(ord),
 			ord.getRequester(),
-			startTime,
 			user
 		);
+
+		AuditableOrderStateChange auditOrderToFulfilledState = dbManager.getFulfilledStateChange(ord.getId());
+		System.out.println(auditOrderToFulfilledState.getNewState());
+		if(auditOrderToFulfilledState != null && auditOrderToFulfilledState.getTimestamp().getTime() < auditOrder.getTimestamp().getTime()) {
+			if(orderHasFinished(auditOrder.getNewState())) {
+				rec.setStartTime(getStartTimestamp(auditOrderToFulfilledState.getTimestamp()));
+				rec.setEndTime(auditOrder.getTimestamp());
+				setClosedOrderDuration(auditOrder, rec);
+			} else if(!auditOrder.getNewState().equals(OrderState.FULFILLED)) {
+				rec.setStartTime(getStartTimestamp(auditOrderToFulfilledState.getTimestamp()));
+				rec.setDuration(auditOrder.getTimestamp().getTime() - rec.getStartTime().getTime());
+			}
+		}
+
+		if(auditOrder.getNewState().equals(OrderState.FULFILLED)) {
+			rec.setStartTime(getStartTimestamp(getStartTimestamp(auditOrder.getTimestamp())));
+			rec.setDuration(0);
+		}
 
 		rec.setState(auditOrder.getNewState());
 
@@ -110,7 +133,7 @@ public class SyncProcessor implements Runnable {
 		dbManager.saveRecord(rec);
 	}
 
-	private void setFinishedOrderDuration(AuditableOrderStateChange auditOrder, Record rec) {
+	private void setClosedOrderDuration(AuditableOrderStateChange auditOrder, Record rec) {
 		if(orderHasFinished(auditOrder.getNewState()) && rec.getDuration() == 0) {
 			rec.setDuration(rec.getEndTime().getTime() - rec.getStartTime().getTime());
 		}

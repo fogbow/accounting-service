@@ -33,7 +33,7 @@ public class DatabaseManager {
     }
 
     public List<AuditableOrderStateChange> getAllAuditableOrdersFromCurrentId(Long id) {
-        return auditableOrderStateChangeRepository.findByIdGreaterThanOrderByIdAsc(id);
+        return auditableOrderStateChangeRepository.findByIdGreaterThanEqualOrderByIdAsc(id);
     }
 
     public Record getRecordByOrderId(String orderId) {
@@ -47,6 +47,7 @@ public class DatabaseManager {
             idRecorder = new AuditableOrderIdRecorder();
             idRecorder.setId(SystemConstants.ID_RECORDER_KEY);
             idRecorder.setCurrentId((0L));
+            auditableOrderIdRecorderRepository.save(idRecorder);
         }
 
         return idRecorder;
@@ -74,5 +75,9 @@ public class DatabaseManager {
 
     public void saveUser(AccountingUser user) {
         userRepository.save(user);
+    }
+
+    public AuditableOrderStateChange getFulfilledStateChange(String orderId) {
+        return auditableOrderStateChangeRepository.findFirstByOrderIdAndNewStateOrderByTimestampAsc(orderId, OrderState.FULFILLED);
     }
 }
