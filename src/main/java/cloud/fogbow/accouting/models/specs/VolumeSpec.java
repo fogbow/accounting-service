@@ -1,5 +1,8 @@
 package cloud.fogbow.accouting.models.specs;
 
+import javax.persistence.Entity;
+
+@Entity
 public class VolumeSpec extends OrderSpec {
 
     private int size;
@@ -7,6 +10,8 @@ public class VolumeSpec extends OrderSpec {
     public VolumeSpec(int size) {
         this.size = size;
     }
+
+    public VolumeSpec() {}
 
     public int getSize() {
         return size;

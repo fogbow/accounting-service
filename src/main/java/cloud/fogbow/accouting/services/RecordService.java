@@ -32,7 +32,6 @@ public class RecordService {
                 AccountingPublicKeysHolder.getInstance().getAsPublicKey(), systemUserToken);
 
         AccountingOperation operation = new AccountingOperation(operationType, userId);
-
         checkAuthorization(requester, operation);
 
         Date initialDate = new SimpleDateFormat("yyyy-MM-dd").parse(intervalStart);
@@ -44,7 +43,7 @@ public class RecordService {
         checkInterval(begin, end);
 
         AccountingUser user = new AccountingUser(
-                new UserIdentity(providingMember, userId)
+                new UserIdentity(providingMember, requester.getId())
         );
 
         List<Record> closedRecords = dbManager.getClosedRecords(user, requestingMember, resourceType, begin, end);

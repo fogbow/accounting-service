@@ -58,14 +58,14 @@ public class DatabaseManager {
     }
 
     public List<Record> getOpenedRecords(AccountingUser user, String requestingMember, String resourceType, Timestamp startTime, Timestamp endTime) {
-        return recordRepository.findByUserAndRequestingMemberAndResourceTypeAndStartTimeLessThanEqualAndStartTimeGreaterThanEqualAndStateEquals(
-                user, requestingMember, resourceType, endTime, startTime, OrderState.FULFILLED
+        return recordRepository.findByUserAndRequestingMemberAndResourceTypeAndStartDateLessThanEqualAndStartDateGreaterThanEqualAndStateEquals(
+            user, requestingMember, resourceType, endTime, startTime, OrderState.FULFILLED
         );
     }
 
     public List<Record> getClosedRecords(AccountingUser user, String requestingMember, String resourceType, Timestamp beginTime, Timestamp endTime) {
-        return recordRepository.findByUserAndRequestingMemberAndResourceTypeAndStartTimeLessThanEqualAndEndTimeGreaterThanEqual(
-                user, requestingMember, resourceType, endTime, beginTime
+        return recordRepository.findByUserAndRequestingMemberAndResourceTypeAndStartDateLessThanEqualAndEndDateGreaterThanEqual(
+            user, requestingMember, resourceType, endTime, beginTime
         );
     }
 

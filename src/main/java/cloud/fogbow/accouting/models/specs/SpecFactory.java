@@ -1,14 +1,21 @@
 package cloud.fogbow.accouting.models.specs;
 
 import cloud.fogbow.accouting.constants.Messages;
+import cloud.fogbow.accouting.datastore.OrderSpecRepository;
 import cloud.fogbow.accouting.exceptions.TypeNotAllowedException;
 import cloud.fogbow.accouting.models.*;
 import cloud.fogbow.accouting.models.orders.ComputeOrder;
 import cloud.fogbow.accouting.models.orders.NetworkOrder;
 import cloud.fogbow.accouting.models.orders.Order;
 import cloud.fogbow.accouting.models.orders.VolumeOrder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class SpecFactory {
+
+    @Autowired
+    private OrderSpecRepository orderSpecRepository;
 
     public OrderSpec constructSpec(Order order) {
         OrderSpec spec;
@@ -28,6 +35,7 @@ public class SpecFactory {
                 throw new TypeNotAllowedException(String.format(Messages.Exception.TYPE_NOT_ALLOWED_YET, resourceType.getValue()));
         }
 
+        orderSpecRepository.save(spec);
         return spec;
     }
 }

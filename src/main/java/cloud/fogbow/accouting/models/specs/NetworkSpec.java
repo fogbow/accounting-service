@@ -1,14 +1,23 @@
 package cloud.fogbow.accouting.models.specs;
 
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+
+@Entity
 public class NetworkSpec extends OrderSpec {
 
     private String cidr;
+
+    @Enumerated(EnumType.STRING)
     private NetworkAllocationMode allocationMode;
 
     public NetworkSpec(String cidr, NetworkAllocationMode allocationMode) {
         this.cidr = cidr;
         this.allocationMode = allocationMode;
     }
+
+    public NetworkSpec() {}
 
     public String getCidr() {
         return cidr;

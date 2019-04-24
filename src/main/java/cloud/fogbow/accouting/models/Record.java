@@ -5,7 +5,9 @@ import cloud.fogbow.accouting.models.specs.OrderSpec;
 
 import javax.persistence.*;
 
+import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.Objects;
 
 @Entity
@@ -25,7 +27,7 @@ public class Record {
 	@Column(nullable = false)
 	private String resourceType;
 	
-	@Column(nullable = false)
+	@OneToOne
 	private OrderSpec spec;
 	
 	@Column(nullable = false)
@@ -33,6 +35,12 @@ public class Record {
 
 	@Column
 	private Timestamp startTime;
+
+	@Column
+	private Timestamp startDate;
+
+	@Column
+	private Timestamp endDate;
 
 	@Column
 	private Timestamp endTime;
@@ -43,9 +51,6 @@ public class Record {
 	@Column
 	@Enumerated(EnumType.STRING)
 	private OrderState state;
-
-	@Column
-	private OrderSpec orderSpec;
 
 	@ManyToOne
 	@JoinColumns({
@@ -77,8 +82,8 @@ public class Record {
 		this.resourceType = resourceType;
 	}
 
-	public String getSpec() {
-		return spec.toString();
+	public OrderSpec getSpec() {
+		return spec;
 	}
 
 	public void setSpec(OrderSpec spec) {
@@ -125,6 +130,22 @@ public class Record {
 		this.state = newState;
 	}
 
+	public void setStartDate(Timestamp startDate) {
+		this.startDate = startDate;
+	}
+
+	public Timestamp getStartDate() {
+		return startDate;
+	}
+
+	public void setEndDate(Timestamp endDate) {
+		this.endDate = endDate;
+	}
+
+	public Timestamp getEndDate() {
+		return endDate;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
@@ -161,7 +182,6 @@ public class Record {
 		this.spec = spec;
 		this.requestingMember = requestingMember;
 		this.duration = 0;
-		this.state = OrderState.FULFILLED;
 		this.user = user;
 	}
 

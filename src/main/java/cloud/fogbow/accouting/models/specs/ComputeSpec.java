@@ -1,5 +1,9 @@
 package cloud.fogbow.accouting.models.specs;
 
+import javax.persistence.Embeddable;
+import javax.persistence.Entity;
+
+@Entity
 public class ComputeSpec extends OrderSpec {
 
     private int vCpu;
@@ -9,6 +13,8 @@ public class ComputeSpec extends OrderSpec {
         this.vCpu = vCpu;
         this.ram = ram;
     }
+
+    public ComputeSpec() {}
 
     public int getvCpu() {
         return vCpu;

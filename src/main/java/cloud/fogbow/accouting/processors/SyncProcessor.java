@@ -1,6 +1,7 @@
 package cloud.fogbow.accouting.processors;
 
 import java.sql.Timestamp;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -24,7 +25,9 @@ public class SyncProcessor implements Runnable {
 	private static final Logger logger = LoggerFactory.getLogger(SyncProcessor.class);
 
 	private AuditableOrderIdRecorder idRecorder;
-	private SpecFactory specFactory = new SpecFactory();
+
+	@Autowired
+	private SpecFactory specFactory;
 
 	@Autowired
 	private DatabaseManager dbManager;
@@ -39,7 +42,7 @@ public class SyncProcessor implements Runnable {
 				checkOrdersHistory();
 
 				logger.info("Finish updating.");
-				
+
 				Thread.sleep(SLEEP_TIME);
 			} catch (InterruptedException e) {
 				logger.info("Problem on updating records.");
@@ -55,7 +58,6 @@ public class SyncProcessor implements Runnable {
 	}
 
 	private void checkOrdersHistory() {
-		System.out.println("current id " +idRecorder.getCurrentId());
 		List<AuditableOrderStateChange> auditableOrders = dbManager.getAllAuditableOrdersFromCurrentId(idRecorder.getCurrentId());
 
 		for(AuditableOrderStateChange auditOrder : auditableOrders) {
@@ -79,16 +81,18 @@ public class SyncProcessor implements Runnable {
 			if(orderHasFinished(auditOrder.getNewState())) {
 				rec.setState(auditOrder.getNewState());
 				rec.setEndTime(auditOrder.getTimestamp());
+				rec.setEndDate(extractDateFromTimestamp(auditOrder.getTimestamp()));
 				setClosedOrderDuration(auditOrder, rec);
 			} else if(auditOrder.getNewState().equals(OrderState.UNABLE_TO_CHECK_STATUS)) {
-				if(rec.getStartTime() != null)
-					rec.setDuration(auditOrder.getTimestamp().getTime() - rec.getStartTime().getTime());
+				rec.setDuration(getDuration(auditOrder.getTimestamp(), rec.getStartTime()));
 				rec.setState(auditOrder.getNewState());
 			} else if(auditOrder.getNewState().equals(OrderState.FULFILLED)) {
 				rec.setState(auditOrder.getNewState());
 				rec.setDuration(0);
-				if(rec.getStartTime() == null)
-					rec.setStartTime(getStartTimestamp(auditOrder.getTimestamp()));
+				if(rec.getStartTime() == null) {
+					rec.setStartTime(auditOrder.getTimestamp());
+				}
+
 			}
 			dbManager.saveRecord(rec);
 		}
@@ -109,21 +113,23 @@ public class SyncProcessor implements Runnable {
 			user
 		);
 
+		rec.setStartDate(extractDateFromTimestamp(auditOrder.getTimestamp()));
+
 		AuditableOrderStateChange auditOrderToFulfilledState = dbManager.getFulfilledStateChange(ord.getId());
-		System.out.println(auditOrderToFulfilledState.getNewState());
 		if(auditOrderToFulfilledState != null && auditOrderToFulfilledState.getTimestamp().getTime() < auditOrder.getTimestamp().getTime()) {
 			if(orderHasFinished(auditOrder.getNewState())) {
-				rec.setStartTime(getStartTimestamp(auditOrderToFulfilledState.getTimestamp()));
+				rec.setStartTime(auditOrderToFulfilledState.getTimestamp());
 				rec.setEndTime(auditOrder.getTimestamp());
+				rec.setEndDate(extractDateFromTimestamp(auditOrder.getTimestamp()));
 				setClosedOrderDuration(auditOrder, rec);
 			} else if(!auditOrder.getNewState().equals(OrderState.FULFILLED)) {
-				rec.setStartTime(getStartTimestamp(auditOrderToFulfilledState.getTimestamp()));
+				rec.setStartTime(auditOrderToFulfilledState.getTimestamp());
 				rec.setDuration(auditOrder.getTimestamp().getTime() - rec.getStartTime().getTime());
 			}
 		}
 
 		if(auditOrder.getNewState().equals(OrderState.FULFILLED)) {
-			rec.setStartTime(getStartTimestamp(getStartTimestamp(auditOrder.getTimestamp())));
+			rec.setStartTime(auditOrder.getTimestamp());
 			rec.setDuration(0);
 		}
 
@@ -135,26 +141,31 @@ public class SyncProcessor implements Runnable {
 
 	private void setClosedOrderDuration(AuditableOrderStateChange auditOrder, Record rec) {
 		if(orderHasFinished(auditOrder.getNewState()) && rec.getDuration() == 0) {
-			rec.setDuration(rec.getEndTime().getTime() - rec.getStartTime().getTime());
+			rec.setDuration(getDuration(rec.getEndTime(), rec.getStartTime()));
 		}
 	}
 
-	private Timestamp getStartTimestamp(Timestamp auditTimestamp) {
-		Timestamp startTimestamp;
-
-		try {
-			Date auditDate = auditTimestamp;
-			Date filteredDate = new SimpleDateFormat("yyyy-MM-dd").parse(auditDate.toString().split(" ")[0]);
-			startTimestamp = new Timestamp(filteredDate.getTime());
-		} catch (ParseException pe) {
-			startTimestamp = auditTimestamp;
+	private long getDuration(Timestamp intervalEnd, Timestamp intervalStart) {
+		if(intervalEnd != null && intervalStart != null) {
+			return intervalEnd.getTime() - intervalStart.getTime();
 		}
 
-		return startTimestamp;
+		return 0;
 	}
 
 	private boolean orderHasFinished(OrderState state) {
-		return state.equals((OrderState.CLOSED)) || state.equals(OrderState.FAILED_AFTER_SUCCESSUL_REQUEST);
+		return state.equals((OrderState.CLOSED)) || state.equals(OrderState.FAILED_AFTER_SUCCESSFUL_REQUEST) || state.equals((OrderState.DEACTIVATED));
+	}
+
+	private Timestamp extractDateFromTimestamp(Timestamp timestamp) {
+		try {
+			DateFormat f = new SimpleDateFormat("yyyy-MM-dd");
+			Date d = f.parse(f.format((Date) timestamp));
+			return new Timestamp(d.getTime());
+		} catch (ParseException pe) {
+			pe.printStackTrace();
+		}
+		return null;
 	}
 
 }
