@@ -60,7 +60,7 @@ public class SyncProcessor implements Runnable {
 		List<AuditableOrderStateChange> auditableOrders = dbManager.getAllAuditableOrdersFromCurrentId(idRecorder.getCurrentId());
 
 		for(AuditableOrderStateChange auditOrder : auditableOrders) {
-			alignRecord(auditOrder);
+			manageRecord(auditOrder);
 		}
 
 		int auditableOrdersSize = auditableOrders.size();
@@ -71,7 +71,7 @@ public class SyncProcessor implements Runnable {
 		}
 	}
 
-	private void alignRecord(AuditableOrderStateChange auditOrder) {
+	private void manageRecord(AuditableOrderStateChange auditOrder) {
 		Record rec = dbManager.getRecordByOrderId(auditOrder.getOrder().getId());
 
 		if(rec == null) {
@@ -114,7 +114,17 @@ public class SyncProcessor implements Runnable {
 
 		rec.setStartDate(extractDateFromTimestamp(auditOrder.getTimestamp()));
 
+		setTimeAttributes(ord, auditOrder, rec);
+
+		rec.setState(auditOrder.getNewState());
+
+		dbManager.saveUser(user);
+		dbManager.saveRecord(rec);
+	}
+
+	private void setTimeAttributes(Order ord, AuditableOrderStateChange auditOrder, Record rec) {
 		AuditableOrderStateChange auditOrderToFulfilledState = dbManager.getFulfilledStateChange(ord.getId());
+
 		if(auditOrderToFulfilledState != null && auditOrderToFulfilledState.getTimestamp().getTime() < auditOrder.getTimestamp().getTime()) {
 			if(orderHasFinished(auditOrder.getNewState())) {
 				rec.setStartTime(auditOrderToFulfilledState.getTimestamp());
@@ -131,11 +141,6 @@ public class SyncProcessor implements Runnable {
 			rec.setStartTime(auditOrder.getTimestamp());
 			rec.setDuration(0);
 		}
-
-		rec.setState(auditOrder.getNewState());
-
-		dbManager.saveUser(user);
-		dbManager.saveRecord(rec);
 	}
 
 	private void setClosedOrderDuration(AuditableOrderStateChange auditOrder, Record rec) {
