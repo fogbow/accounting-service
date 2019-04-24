@@ -1,6 +1,7 @@
 package cloud.fogbow.accouting.services;
 
 import cloud.fogbow.accouting.authentication.AccountingPublicKeysHolder;
+import cloud.fogbow.accouting.constants.Messages;
 import cloud.fogbow.accouting.datastore.DatabaseManager;
 import cloud.fogbow.accouting.exceptions.InvalidIntervalException;
 import cloud.fogbow.accouting.models.*;
@@ -26,6 +27,8 @@ public class RecordService {
 
     private AuthorizationPlugin authPlugin = new AccountingAuthPlugin();
 
+    private String simpleDateFormat = "yyyy-MM-dd";
+
     public List<Record> getUserRecords(String userId, String requestingMember, String providingMember,
                                        String resourceType, String intervalStart, String intervalEnd, String systemUserToken, AccountingOperationType operationType) throws Exception{
         SystemUser requester = AuthenticationUtil.authenticate(
@@ -34,10 +37,10 @@ public class RecordService {
         AccountingOperation operation = new AccountingOperation(operationType, userId);
         checkAuthorization(requester, operation);
 
-        Date initialDate = new SimpleDateFormat("yyyy-MM-dd").parse(intervalStart);
+        Date initialDate = new SimpleDateFormat(simpleDateFormat).parse(intervalStart);
         Timestamp begin = new Timestamp(initialDate.getTime());
 
-        Date finalDate = new SimpleDateFormat("yyyy-MM-dd").parse(intervalEnd);
+        Date finalDate = new SimpleDateFormat(simpleDateFormat).parse(intervalEnd);
         Timestamp end = new Timestamp(finalDate.getTime());
 
         checkInterval(begin, end);
@@ -69,15 +72,15 @@ public class RecordService {
         long now = new Date().getTime();
 
         if(begin.getTime() > end.getTime()) {
-            throw new InvalidIntervalException("Begin time must not be greater than end time");
+            throw new InvalidIntervalException(Messages.Exception.START_TIME_GREATER_THAN_END_TIME);
         } else if(end.getTime() > now || begin.getTime() > now) {
-            throw new InvalidIntervalException("Billing predictions are not allowed");
+            throw new InvalidIntervalException(Messages.Exception.BILLING_PREDICTIONS);
         }
     }
 
     private void checkAuthorization(SystemUser systemUser, AccountingOperation operation) throws UnauthorizedRequestException, UnexpectedException {
         if(!authPlugin.isAuthorized(systemUser, operation)) {
-            throw new UnauthorizedRequestException("The user is not authorized to do this operation");
+            throw new UnauthorizedRequestException(Messages.Exception.UNAUTHORIZED_OPERATION);
         }
     }
 }

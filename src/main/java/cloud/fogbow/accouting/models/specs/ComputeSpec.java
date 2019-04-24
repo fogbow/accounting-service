@@ -1,6 +1,5 @@
 package cloud.fogbow.accouting.models.specs;
 
-import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 
 @Entity

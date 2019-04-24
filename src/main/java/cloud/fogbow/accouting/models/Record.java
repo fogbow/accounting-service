@@ -5,9 +5,7 @@ import cloud.fogbow.accouting.models.specs.OrderSpec;
 
 import javax.persistence.*;
 
-import java.sql.Time;
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.Objects;
 
 @Entity

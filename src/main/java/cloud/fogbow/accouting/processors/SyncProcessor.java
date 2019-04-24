@@ -11,7 +11,6 @@ import cloud.fogbow.accouting.datastore.DatabaseManager;
 import cloud.fogbow.accouting.models.*;
 import cloud.fogbow.accouting.models.orders.OrderState;
 import cloud.fogbow.accouting.models.specs.SpecFactory;
-import org.aspectj.weaver.ast.Or;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
