@@ -1,12 +1,13 @@
 package cloud.fogbow.accounting.services;
 
-import cloud.fogbow.accounting.authentication.AccountingPublicKeysHolder;
-import cloud.fogbow.accounting.datastore.DatabaseManager;
-import cloud.fogbow.accounting.models.AccountingOperationType;
-import cloud.fogbow.accounting.models.AccountingUser;
-import cloud.fogbow.accounting.models.Record;
-import cloud.fogbow.accounting.models.UserIdentity;
-import cloud.fogbow.accounting.models.orders.OrderState;
+import cloud.fogbow.accounting.core.AccountingPublicKeysHolder;
+import cloud.fogbow.accounting.core.datastore.DatabaseManager;
+import cloud.fogbow.accounting.core.models.AccountingOperationType;
+import cloud.fogbow.accounting.core.models.AccountingUser;
+import cloud.fogbow.accounting.core.models.Record;
+import cloud.fogbow.accounting.core.models.UserIdentity;
+import cloud.fogbow.accounting.core.models.orders.OrderState;
+import cloud.fogbow.accounting.core.datastore.services.RecordService;
 import cloud.fogbow.as.core.util.AuthenticationUtil;
 import cloud.fogbow.common.models.SystemUser;
 import org.junit.Before;
@@ -43,7 +44,7 @@ public class RecordServiceTest {
         SystemUser sysUser = getSysUser();
 
         recordService.getUserRecords(sysUser.getId(), "mockedRequestingMember", sysUser.getIdentityProviderId(), "compute",
-                "", "", "poakdpadopdopddosp", AccountingOperationType.OWN_BILLING);
+                "", "");
 
         Mockito.verify(authenticationUtil.authenticate(
                 AccountingPublicKeysHolder.getInstance().getAsPublicKey(),
@@ -66,9 +67,9 @@ public class RecordServiceTest {
         );
     }
 
-    public void mockDatabaseOperations(String requestingMember, String resourceType, Timestamp begin, Timestamp end) throws Exception{
+    public void mockDatabaseOperations(String requestingMember, String resourceType, Timestamp begin, Timestamp end) {
         AccountingUser mockedUser = getAccountingUser();
-        DatabaseManager databaseManager = Mockito.mock(DatabaseManager.class);
+        RecordService databaseManager = Mockito.mock(RecordService.class);
         Mockito.when(databaseManager.getClosedRecords(mockedUser, requestingMember, resourceType, begin, end)).thenReturn(getClosedRecords());
         Mockito.when(databaseManager.getOpenedRecords(mockedUser, requestingMember, resourceType, begin, end)).thenReturn(getOpenedRecords());
 
