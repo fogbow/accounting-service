@@ -6,4 +6,5 @@ public class SystemConstants {
     public static final String ID_RECORDER_KEY = "recorder";
     public static final String WHITE_LIST_FILE = "white-list.conf";
     public static final String SERVICE_BASE_ENDPOINT = "acc/";
+	public static final String API_VERSION_NUMBER = "1.0.0";
 }

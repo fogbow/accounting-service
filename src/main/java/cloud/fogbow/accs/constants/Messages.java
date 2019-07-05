@@ -14,4 +14,8 @@ public class Messages {
         public static final String START_TIME_GREATER_THAN_END_TIME = "Begin time must not be greater than end time";
         public static final String GENERIC_EXCEPTION = "Operation returned error: %s";
     }
+
+	public static class Info {
+		public static final String RECEIVING_GET_VERSION_REQUEST = "Get request for version received.";
+	}
 }

@@ -2,32 +2,47 @@ package cloud.fogbow.accs.api.http.response;
 
 import cloud.fogbow.accs.core.models.orders.OrderState;
 import cloud.fogbow.accs.core.models.specs.OrderSpec;
+import cloud.fogbow.accs.constants.ApiDocumentation;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.sql.Timestamp;
 import java.util.Objects;
 
+@ApiModel
 public class Record {
 
+	@ApiModelProperty(position = 0, example = ApiDocumentation.Record.RECORD_ID)
 	private Long id;
 
+	@ApiModelProperty(position = 1, example = ApiDocumentation.Record.ORDER_ID)
 	private String orderId;
 	
+	@ApiModelProperty(position = 2, example = ApiDocumentation.Record.RESOURSE_TYPE)
 	private String resourceType;
 	
+	@ApiModelProperty
 	private OrderSpec spec;
 	
+	@ApiModelProperty(position = 4, example = ApiDocumentation.Record.REQUESTING_MEMBER)
 	private String requestingMember;
 
+	@ApiModelProperty(position = 5, example = ApiDocumentation.Record.START_TIME)
 	private Timestamp startTime;
 
+	@ApiModelProperty(position = 6, example = ApiDocumentation.Record.START_DATE)
 	private Timestamp startDate;
 
+	@ApiModelProperty(position = 7, example = ApiDocumentation.Record.END_DATE)
 	private Timestamp endDate;
 
+	@ApiModelProperty(position = 8, example = ApiDocumentation.Record.END_TIME)
 	private Timestamp endTime;
 	
+	@ApiModelProperty(position = 9, example = ApiDocumentation.Record.DURATION)
 	private long duration = 0;
 
+	@ApiModelProperty(position = 10, example = ApiDocumentation.Record.STATE)
 	private OrderState state;
 
 	public Long getId() {

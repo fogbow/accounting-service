@@ -5,6 +5,9 @@ import cloud.fogbow.accs.constants.Messages;
 import cloud.fogbow.accs.core.datastore.DatabaseManager;
 import cloud.fogbow.accs.core.models.AccountingOperation;
 import cloud.fogbow.accs.core.models.AccountingOperationType;
+import cloud.fogbow.accs.constants.ConfigurationPropertyDefaults;
+import cloud.fogbow.accs.constants.ConfigurationPropertyKeys;
+import cloud.fogbow.accs.constants.SystemConstants;
 import cloud.fogbow.as.core.util.AuthenticationUtil;
 import cloud.fogbow.common.exceptions.FogbowException;
 import cloud.fogbow.common.exceptions.UnauthorizedRequestException;
@@ -12,6 +15,7 @@ import cloud.fogbow.common.exceptions.UnexpectedException;
 import cloud.fogbow.common.models.SystemUser;
 import cloud.fogbow.common.plugins.authorization.AuthorizationPlugin;
 import cloud.fogbow.common.util.CryptoUtil;
+import cloud.fogbow.common.util.PropertiesUtil;
 import cloud.fogbow.common.util.ServiceAsymmetricKeysHolder;
 
 import java.io.IOException;
@@ -19,11 +23,13 @@ import java.security.GeneralSecurityException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 public class ApplicationFacade {
 
     private static ApplicationFacade instance;
     private AuthorizationPlugin authorizationPlugin;
+    private String buildNumber;
 
     public static synchronized ApplicationFacade getInstance() {
         if (instance == null) {
@@ -97,5 +103,17 @@ public class ApplicationFacade {
         if(!authorizationPlugin.isAuthorized(systemUser, operation)) {
             throw new UnauthorizedRequestException(Messages.Exception.UNAUTHORIZED_OPERATION);
         }
+    }
+
+	public String getVersionNumber() {
+		// There is no need to authenticate the user or authorize this operation
+        return SystemConstants.API_VERSION_NUMBER + "-" + this.buildNumber;
+	}
+	
+	// Used for testing
+    protected void setBuildNumber(String fileName) {
+        Properties properties = PropertiesUtil.readProperties(fileName);
+        this.buildNumber = properties.getProperty(ConfigurationPropertyKeys.BUILD_NUMBER_KEY,
+                ConfigurationPropertyDefaults.BUILD_NUMBER);
     }
 }
