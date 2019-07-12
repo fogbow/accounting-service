@@ -18,14 +18,14 @@ public class Record {
 	@ApiModelProperty(position = 1, example = ApiDocumentation.Record.ORDER_ID)
 	private String orderId;
 	
-	@ApiModelProperty(position = 2, example = ApiDocumentation.Record.RESOURSE_TYPE)
+	@ApiModelProperty(position = 2, example = ApiDocumentation.Record.RESOURCE_TYPE)
 	private String resourceType;
 	
 	@ApiModelProperty
 	private OrderSpec spec;
 	
-	@ApiModelProperty(position = 4, example = ApiDocumentation.Record.REQUESTING_MEMBER)
-	private String requestingMember;
+	@ApiModelProperty(position = 4, example = ApiDocumentation.Record.REQUESTER)
+	private String requester;
 
 	@ApiModelProperty(position = 5, example = ApiDocumentation.Record.START_TIME)
 	private Timestamp startTime;
@@ -85,12 +85,12 @@ public class Record {
 		return endTime;
 	}
 
-	public String getRequestingMember() {
-		return requestingMember;
+	public String getRequester() {
+		return requester;
 	}
 
-	public void setRequestingMember(String requestingMember) {
-		this.requestingMember = requestingMember;
+	public void setRequester(String requester) {
+		this.requester = requester;
 	}
 
 	public Timestamp getStartTime() {
@@ -143,22 +143,22 @@ public class Record {
 				Objects.equals(orderId, record.orderId) &&
 				Objects.equals(resourceType, record.resourceType) &&
 				Objects.equals(spec, record.spec) &&
-				Objects.equals(requestingMember, record.requestingMember) &&
+				Objects.equals(requester, record.requester) &&
 				Objects.equals(startTime, record.startTime);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, orderId, resourceType, spec, requestingMember, startTime, duration);
+		return Objects.hash(id, orderId, resourceType, spec, requester, startTime, duration);
 	}
 
-	public Record(Long id, String orderId, String resourceType, OrderSpec spec, String requestingMember, Timestamp startTime,
+	public Record(Long id, String orderId, String resourceType, OrderSpec spec, String requester, Timestamp startTime,
 				  Timestamp startDate, Timestamp endTime, Timestamp endDate, long duration, OrderState state) {
 		this.id = id;
 		this.orderId = orderId;
 		this.resourceType = resourceType;
 		this.spec = spec;
-		this.requestingMember = requestingMember;
+		this.requester = requester;
 		this.startTime = startTime;
 		this.startDate = startDate;
 		this.endDate = endDate;
