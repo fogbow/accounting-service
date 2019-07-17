@@ -53,7 +53,7 @@ public class SyncProcessor implements Runnable {
 	}
 
 	private void checkIdRecorder() {
-		if(idRecorder == null) {
+		if (idRecorder == null) {
 			idRecorder = dbManager.getIdRecorder();
 		}
 	}
@@ -61,13 +61,13 @@ public class SyncProcessor implements Runnable {
 	private void checkOrdersHistory() {
 		List<AuditableOrderStateChange> auditableOrders = dbManager.getAllAuditableOrdersFromCurrentId(idRecorder.getCurrentId());
 
-		for(AuditableOrderStateChange auditOrder : auditableOrders) {
+		for (AuditableOrderStateChange auditOrder : auditableOrders) {
 			manageRecord(auditOrder);
 		}
 
 		int auditableOrdersSize = auditableOrders.size();
 
-		if(auditableOrdersSize > 0) {
+		if (auditableOrdersSize > 0) {
 			idRecorder.setCurrentId(auditableOrders.get(auditableOrdersSize-1).getId()+1);
 			dbManager.saveIdRecorder(idRecorder);
 		}
@@ -76,21 +76,21 @@ public class SyncProcessor implements Runnable {
 	private void manageRecord(AuditableOrderStateChange auditOrder) {
 		Record rec = dbManager.getRecordByOrderId(auditOrder.getOrder().getId());
 
-		if(rec == null) {
+		if (rec == null) {
 			createRecord(auditOrder);
 		} else {
-			if(orderHasFinished(auditOrder.getNewState())) {
+			if (orderHasFinished(auditOrder.getNewState())) {
 				rec.setState(auditOrder.getNewState());
 				rec.setEndTime(auditOrder.getTimestamp());
 				rec.setEndDate(extractDateFromTimestamp(auditOrder.getTimestamp()));
 				setClosedOrderDuration(auditOrder, rec);
-			} else if(auditOrder.getNewState().equals(OrderState.UNABLE_TO_CHECK_STATUS)) {
+			} else if (auditOrder.getNewState().equals(OrderState.UNABLE_TO_CHECK_STATUS)) {
 				rec.setDuration(getDuration(auditOrder.getTimestamp(), rec.getStartTime()));
 				rec.setState(auditOrder.getNewState());
-			} else if(auditOrder.getNewState().equals(OrderState.FULFILLED)) {
+			} else if (auditOrder.getNewState().equals(OrderState.FULFILLED)) {
 				rec.setState(auditOrder.getNewState());
 				rec.setDuration(0);
-				if(rec.getStartTime() == null) {
+				if (rec.getStartTime() == null) {
 					rec.setStartTime(auditOrder.getTimestamp());
 				}
 
@@ -127,32 +127,32 @@ public class SyncProcessor implements Runnable {
 	private void setTimeAttributes(Order ord, AuditableOrderStateChange auditOrder, Record rec) {
 		AuditableOrderStateChange auditOrderToFulfilledState = dbManager.getFulfilledStateChange(ord.getId());
 
-		if(auditOrderToFulfilledState != null && auditOrderToFulfilledState.getTimestamp().getTime() < auditOrder.getTimestamp().getTime()) {
-			if(orderHasFinished(auditOrder.getNewState())) {
+		if (auditOrderToFulfilledState != null && auditOrderToFulfilledState.getTimestamp().getTime() < auditOrder.getTimestamp().getTime()) {
+			if (orderHasFinished(auditOrder.getNewState())) {
 				rec.setStartTime(auditOrderToFulfilledState.getTimestamp());
 				rec.setEndTime(auditOrder.getTimestamp());
 				rec.setEndDate(extractDateFromTimestamp(auditOrder.getTimestamp()));
 				setClosedOrderDuration(auditOrder, rec);
-			} else if(!auditOrder.getNewState().equals(OrderState.FULFILLED)) {
+			} else if (!auditOrder.getNewState().equals(OrderState.FULFILLED)) {
 				rec.setStartTime(auditOrderToFulfilledState.getTimestamp());
 				rec.setDuration(auditOrder.getTimestamp().getTime() - rec.getStartTime().getTime());
 			}
 		}
 
-		if(auditOrder.getNewState().equals(OrderState.FULFILLED)) {
+		if (auditOrder.getNewState().equals(OrderState.FULFILLED)) {
 			rec.setStartTime(auditOrder.getTimestamp());
 			rec.setDuration(0);
 		}
 	}
 
 	private void setClosedOrderDuration(AuditableOrderStateChange auditOrder, Record rec) {
-		if(orderHasFinished(auditOrder.getNewState()) && rec.getDuration() == 0) {
+		if (orderHasFinished(auditOrder.getNewState()) && rec.getDuration() == 0) {
 			rec.setDuration(getDuration(rec.getEndTime(), rec.getStartTime()));
 		}
 	}
 
 	private long getDuration(Timestamp intervalEnd, Timestamp intervalStart) {
-		if(intervalEnd != null && intervalStart != null) {
+		if (intervalEnd != null && intervalStart != null) {
 			return intervalEnd.getTime() - intervalStart.getTime();
 		}
 
