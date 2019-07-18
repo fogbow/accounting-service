@@ -71,7 +71,7 @@ public class ApplicationFacade {
     public String getPublicKey() throws UnexpectedException {
         // There is no need to authenticate the user or authorize this operation
         try {
-            return CryptoUtil.savePublicKey(ServiceAsymmetricKeysHolder.getInstance().getPublicKey());
+            return CryptoUtil.toBase64(ServiceAsymmetricKeysHolder.getInstance().getPublicKey());
         } catch (IOException | GeneralSecurityException e) {
             throw new UnexpectedException(e.getMessage(), e);
         }
@@ -100,7 +100,7 @@ public class ApplicationFacade {
     }
 
     private void checkAuthorization(SystemUser systemUser, AccountingOperation operation) throws UnauthorizedRequestException, UnexpectedException {
-        if(!authorizationPlugin.isAuthorized(systemUser, operation)) {
+        if (!authorizationPlugin.isAuthorized(systemUser, operation)) {
             throw new UnauthorizedRequestException(Messages.Exception.UNAUTHORIZED_OPERATION);
         }
     }

@@ -27,7 +27,7 @@ public class AccountingOperation extends FogbowOperation {
     public List<String> getAllowedUsers() {
         List<String> allowedUsers = new ArrayList<String>();
 
-        if(this.type.equals(AccountingOperationType.OTHERS_BILLING)) {
+        if (this.type.equals(AccountingOperationType.OTHERS_BILLING)) {
             try {
                 allowedUsers = new WhiteList().getAllowedUsers();
             } catch (FileNotFoundException e) {
