@@ -23,6 +23,8 @@ public class RecordService {
 
     private static final String SIMPLE_DATE_FORMAT = "yyyy-MM-dd";
 
+    public RecordService() {}
+
     public List<Record> getSelfRecords(String requestingMember, String resourceType, String intervalStart,
                                        String intervalEnd, SystemUser requester) throws ParseException {
         Timestamp start = getTimestampFromString(intervalStart);
@@ -34,6 +36,8 @@ public class RecordService {
 
         List<Record> closedRecords = this.getClosedRecords(user, requestingMember, resourceType, start, end);
         List<Record> openedRecords = this.getOpenedRecords(user, requestingMember, resourceType, start, end);
+
+        setOpenedRecordsDuration(openedRecords);
 
         openedRecords.addAll(closedRecords);
         List<Record> records = openedRecords;
@@ -73,13 +77,12 @@ public class RecordService {
         );
     }
 
-
-    private Timestamp getTimestampFromString(String date) throws ParseException{
+    public Timestamp getTimestampFromString(String date) throws ParseException{
         Date dateRepresentation = new SimpleDateFormat(SIMPLE_DATE_FORMAT).parse(date);
         return new Timestamp(dateRepresentation.getTime());
     }
 
-    private void setOpenedRecordsDuration(List<Record> openedRecords) {
+    public void setOpenedRecordsDuration(List<Record> openedRecords) {
         long now = new Date().getTime();
 
         for (Record rec : openedRecords) {
@@ -87,7 +90,7 @@ public class RecordService {
         }
     }
 
-    private void checkInterval(Timestamp begin, Timestamp end) {
+    public void checkInterval(Timestamp begin, Timestamp end) {
         long now = new Date().getTime();
 
         if (begin.getTime() > end.getTime()) {
@@ -95,5 +98,9 @@ public class RecordService {
         } else if (end.getTime() > now || begin.getTime() > now) {
             throw new InvalidIntervalException(Messages.Exception.BILLING_PREDICTIONS);
         }
+    }
+
+    public void setRecordRepository(RecordRepository repository) {
+        this.recordRepository = repository;
     }
 }

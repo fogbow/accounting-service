@@ -145,6 +145,10 @@ public class Record {
 		return endDate;
 	}
 
+	public void setUser(AccountingUser user) {
+		this.user = user;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
