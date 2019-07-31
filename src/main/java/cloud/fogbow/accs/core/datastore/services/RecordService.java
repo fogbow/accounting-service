@@ -82,7 +82,7 @@ public class RecordService {
     private void setOpenedRecordsDuration(List<Record> openedRecords) {
         long now = new Date().getTime();
 
-        for(Record rec : openedRecords) {
+        for (Record rec : openedRecords) {
             rec.setDuration(now - rec.getStartTime().getTime());
         }
     }
@@ -90,9 +90,9 @@ public class RecordService {
     private void checkInterval(Timestamp begin, Timestamp end) {
         long now = new Date().getTime();
 
-        if(begin.getTime() > end.getTime()) {
+        if (begin.getTime() > end.getTime()) {
             throw new InvalidIntervalException(Messages.Exception.START_TIME_GREATER_THAN_END_TIME);
-        } else if(end.getTime() > now || begin.getTime() > now) {
+        } else if (end.getTime() > now || begin.getTime() > now) {
             throw new InvalidIntervalException(Messages.Exception.BILLING_PREDICTIONS);
         }
     }

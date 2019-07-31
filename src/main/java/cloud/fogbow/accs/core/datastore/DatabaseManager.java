@@ -73,7 +73,7 @@ public class DatabaseManager {
     public AuditableOrderIdRecorder getIdRecorder() {
         AuditableOrderIdRecorder idRecorder = auditableOrderIdRecorderRepository.findById(SystemConstants.ID_RECORDER_KEY);
 
-        if(idRecorder == null) {
+        if (idRecorder == null) {
             idRecorder = new AuditableOrderIdRecorder();
             idRecorder.setId(SystemConstants.ID_RECORDER_KEY);
             idRecorder.setCurrentId((0L));

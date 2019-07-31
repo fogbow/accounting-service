@@ -100,7 +100,7 @@ public class ApplicationFacade {
     }
 
     private void checkAuthorization(SystemUser systemUser, AccountingOperation operation) throws UnauthorizedRequestException, UnexpectedException {
-        if(!authorizationPlugin.isAuthorized(systemUser, operation)) {
+        if (!authorizationPlugin.isAuthorized(systemUser, operation)) {
             throw new UnauthorizedRequestException(Messages.Exception.UNAUTHORIZED_OPERATION);
         }
     }
