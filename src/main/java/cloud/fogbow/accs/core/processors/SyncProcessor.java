@@ -52,13 +52,13 @@ public class SyncProcessor implements Runnable {
 		}
 	}
 
-	private void checkIdRecorder() {
+	protected void checkIdRecorder() {
 		if (idRecorder == null) {
 			idRecorder = dbManager.getIdRecorder();
 		}
 	}
 
-	private void checkOrdersHistory() {
+	protected void checkOrdersHistory() {
 		List<AuditableOrderStateChange> auditableOrders = dbManager.getAllAuditableOrdersFromCurrentId(idRecorder.getCurrentId());
 
 		for (AuditableOrderStateChange auditOrder : auditableOrders) {
@@ -73,7 +73,7 @@ public class SyncProcessor implements Runnable {
 		}
 	}
 
-	private void manageRecord(AuditableOrderStateChange auditOrder) {
+	protected void manageRecord(AuditableOrderStateChange auditOrder) {
 		Record rec = dbManager.getRecordByOrderId(auditOrder.getOrder().getId());
 
 		if (rec == null) {
@@ -99,7 +99,7 @@ public class SyncProcessor implements Runnable {
 		}
 	}
 
-	private void createRecord(AuditableOrderStateChange auditOrder) {
+	protected void createRecord(AuditableOrderStateChange auditOrder) {
 		Order ord = auditOrder.getOrder();
 
 		AccountingUser user = new AccountingUser(
@@ -124,7 +124,7 @@ public class SyncProcessor implements Runnable {
 		dbManager.saveRecord(rec);
 	}
 
-	private void setTimeAttributes(Order ord, AuditableOrderStateChange auditOrder, Record rec) {
+	protected void setTimeAttributes(Order ord, AuditableOrderStateChange auditOrder, Record rec) {
 		AuditableOrderStateChange auditOrderToFulfilledState = dbManager.getFulfilledStateChange(ord.getId());
 
 		if (auditOrderToFulfilledState != null && auditOrderToFulfilledState.getTimestamp().getTime() < auditOrder.getTimestamp().getTime()) {
@@ -145,13 +145,13 @@ public class SyncProcessor implements Runnable {
 		}
 	}
 
-	private void setClosedOrderDuration(AuditableOrderStateChange auditOrder, Record rec) {
+	protected void setClosedOrderDuration(AuditableOrderStateChange auditOrder, Record rec) {
 		if (orderHasFinished(auditOrder.getNewState()) && rec.getDuration() == 0) {
 			rec.setDuration(getDuration(rec.getEndTime(), rec.getStartTime()));
 		}
 	}
 
-	private long getDuration(Timestamp intervalEnd, Timestamp intervalStart) {
+	protected long getDuration(Timestamp intervalEnd, Timestamp intervalStart) {
 		if (intervalEnd != null && intervalStart != null) {
 			return intervalEnd.getTime() - intervalStart.getTime();
 		}
@@ -159,11 +159,11 @@ public class SyncProcessor implements Runnable {
 		return 0;
 	}
 
-	private boolean orderHasFinished(OrderState state) {
+	protected boolean orderHasFinished(OrderState state) {
 		return state.equals((OrderState.CLOSED)) || state.equals(OrderState.FAILED_AFTER_SUCCESSFUL_REQUEST) || state.equals((OrderState.DEACTIVATED));
 	}
 
-	private Timestamp extractDateFromTimestamp(Timestamp timestamp) {
+	protected Timestamp extractDateFromTimestamp(Timestamp timestamp) {
 		try {
 			DateFormat f = new SimpleDateFormat("yyyy-MM-dd");
 			Date d = f.parse(f.format((Date) timestamp));

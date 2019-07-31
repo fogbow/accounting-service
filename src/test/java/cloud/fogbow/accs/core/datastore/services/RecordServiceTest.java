@@ -1,11 +1,10 @@
-package cloud.fogbow.accs.services;
+package cloud.fogbow.accs.core.datastore.services;
 
 import cloud.fogbow.accs.core.AccountingPublicKeysHolder;
 import cloud.fogbow.accs.core.models.AccountingUser;
 import cloud.fogbow.accs.core.models.Record;
 import cloud.fogbow.accs.core.models.UserIdentity;
 import cloud.fogbow.accs.core.models.orders.OrderState;
-import cloud.fogbow.accs.core.datastore.services.RecordService;
 import cloud.fogbow.as.core.util.AuthenticationUtil;
 import cloud.fogbow.common.models.SystemUser;
 import org.junit.Before;
