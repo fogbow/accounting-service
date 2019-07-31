@@ -1,7 +1,6 @@
-package cloud.fogbow.accs.services;
+package cloud.fogbow.accs.core.datastore.services;
 
 import cloud.fogbow.accs.core.datastore.orderstorage.RecordRepository;
-import cloud.fogbow.accs.core.datastore.services.RecordService;
 import cloud.fogbow.accs.core.models.AccountingUser;
 import cloud.fogbow.accs.core.models.Record;
 import cloud.fogbow.accs.core.models.UserIdentity;

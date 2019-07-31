@@ -1,4 +1,4 @@
-package cloud.fogbow.accs.services;
+package cloud.fogbow.accs.core.datastore.services;
 
 import cloud.fogbow.accs.constants.Messages;
 import cloud.fogbow.accs.core.datastore.orderstorage.RecordRepository;
@@ -7,7 +7,6 @@ import cloud.fogbow.accs.core.models.AccountingUser;
 import cloud.fogbow.accs.core.models.Record;
 import cloud.fogbow.accs.core.models.UserIdentity;
 import cloud.fogbow.accs.core.models.orders.OrderState;
-import cloud.fogbow.accs.core.datastore.services.RecordService;
 import cloud.fogbow.common.models.SystemUser;
 import org.junit.Assert;
 import org.junit.Test;
