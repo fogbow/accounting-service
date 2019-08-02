@@ -88,7 +88,7 @@ public class ApplicationFacade {
 
     }
 
-    private SystemUser handleAuthIssues(String systemUserToken, AccountingOperationType operationType) throws FogbowException{
+    protected SystemUser handleAuthIssues(String systemUserToken, AccountingOperationType operationType) throws FogbowException{
         SystemUser requester = AuthenticationUtil.authenticate(
                 AccountingPublicKeysHolder.getInstance().getAsPublicKey(), systemUserToken);
 
