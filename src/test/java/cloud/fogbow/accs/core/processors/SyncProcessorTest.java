@@ -1,5 +1,6 @@
 package cloud.fogbow.accs.core.processors;
 
+import cloud.fogbow.accs.core.datastore.BaseUnitTests;
 import cloud.fogbow.accs.core.datastore.DatabaseManager;
 import cloud.fogbow.accs.core.datastore.orderstorage.AuditableOrderIdRecorder;
 import cloud.fogbow.accs.core.datastore.orderstorage.AuditableOrderStateChange;
@@ -7,32 +8,19 @@ import cloud.fogbow.accs.core.models.Record;
 import cloud.fogbow.accs.core.models.orders.Order;
 import cloud.fogbow.accs.core.models.orders.OrderState;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.BDDMockito;
 import org.mockito.Mockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.powermock.modules.junit4.PowerMockRunnerDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-@PowerMockIgnore({"javax.management.*"})
-@PowerMockRunnerDelegate(SpringRunner.class)
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(SyncProcessor.class)
-@SpringBootTest
-public class SyncProcessorTest extends ProcessorsBaseUnitTest {
+public class SyncProcessorTest extends BaseUnitTests {
 
     private final String FAKE_ORDER_ID = "SINGLE_FAKE_ORDER_ID";
+    private final int TEN_SECONDS = 10000;
 
     @Autowired
     private SyncProcessor syncProcessor;
@@ -55,7 +43,7 @@ public class SyncProcessorTest extends ProcessorsBaseUnitTest {
     public void testGetDuration() {
         //setup
         Timestamp now = new Timestamp(System.currentTimeMillis());
-        Timestamp future = new Timestamp(System.currentTimeMillis() + 10000);
+        Timestamp future = new Timestamp(System.currentTimeMillis() + TEN_SECONDS);
 
         //exercise/verify
         Assert.assertEquals(future.getTime() - now.getTime(), syncProcessor.getDuration(future, now));
@@ -83,7 +71,7 @@ public class SyncProcessorTest extends ProcessorsBaseUnitTest {
         //setup
         Record rec = new Record();
         Timestamp startTime = new Timestamp(System.currentTimeMillis());
-        Timestamp endTime = new Timestamp(System.currentTimeMillis() + 10000);
+        Timestamp endTime = new Timestamp(System.currentTimeMillis() + TEN_SECONDS);
         rec.setStartTime(startTime);
         rec.setEndTime(endTime);
         AuditableOrderStateChange auditableOrderStateChange = new AuditableOrderStateChange();
@@ -102,7 +90,7 @@ public class SyncProcessorTest extends ProcessorsBaseUnitTest {
         //setup
         Record rec = new Record();
         Timestamp startTime = new Timestamp(System.currentTimeMillis());
-        Timestamp endTime = new Timestamp(System.currentTimeMillis() + 10000);
+        Timestamp endTime = new Timestamp(System.currentTimeMillis() + TEN_SECONDS);
         rec.setStartTime(startTime);
         rec.setEndTime(endTime);
         rec.setDuration(1000);
@@ -122,7 +110,7 @@ public class SyncProcessorTest extends ProcessorsBaseUnitTest {
         //setup
         Record rec = new Record();
         Timestamp startTime = new Timestamp(System.currentTimeMillis());
-        Timestamp endTime = new Timestamp(System.currentTimeMillis() + 10000);
+        Timestamp endTime = new Timestamp(System.currentTimeMillis() + TEN_SECONDS);
         rec.setStartTime(startTime);
         rec.setEndTime(endTime);
         AuditableOrderStateChange auditableOrderStateChange = new AuditableOrderStateChange();
@@ -139,11 +127,11 @@ public class SyncProcessorTest extends ProcessorsBaseUnitTest {
     @Test
     public void testSetTimeAttributesWithFulFilledStateChange() {
         //setup
-        Order order = createOrder(FAKE_ORDER_ID);
-        AuditableOrderStateChange auditableOrderStateChange = createAuditableOrderStateChange(order);
-        auditableOrderStateChange.setTimestamp(NOW);
+        Order order = testUtils.createOrder(FAKE_ORDER_ID);
+        AuditableOrderStateChange auditableOrderStateChange = testUtils.createAuditableOrderStateChange(order);
+        auditableOrderStateChange.setTimestamp(testUtils.NOW);
         auditableOrderStateChange.setNewState(OrderState.FULFILLED);
-        Record record = createRecord(order.getId());
+        Record record = testUtils.createRecord(order.getId());
         Mockito.when(dbManager.getFulfilledStateChange(Mockito.anyString())).thenReturn(auditableOrderStateChange);
         //exercise
         syncProcessor.setTimeAttributes(order, auditableOrderStateChange, record);
@@ -156,17 +144,17 @@ public class SyncProcessorTest extends ProcessorsBaseUnitTest {
     @Test
     public void testSetTimeAttributesWithFailedStateChange() {
         //setup
-        Order order = createOrder(FAKE_ORDER_ID);
-        AuditableOrderStateChange fulfilledStateChange = createAuditableOrderStateChange(order);
-        fulfilledStateChange.setTimestamp(NOW);
+        Order order = testUtils.createOrder(FAKE_ORDER_ID);
+        AuditableOrderStateChange fulfilledStateChange = testUtils.createAuditableOrderStateChange(order);
+        fulfilledStateChange.setTimestamp(testUtils.NOW);
         fulfilledStateChange.setNewState(OrderState.FULFILLED);
 
-        AuditableOrderStateChange failedStateChange = createAuditableOrderStateChange(order);
-        Timestamp endTime = new Timestamp(System.currentTimeMillis() + 1000);
+        AuditableOrderStateChange failedStateChange = testUtils.createAuditableOrderStateChange(order);
+        Timestamp endTime = new Timestamp(System.currentTimeMillis() + TEN_SECONDS);
         failedStateChange.setTimestamp(endTime);
         failedStateChange.setNewState(OrderState.FAILED_AFTER_SUCCESSFUL_REQUEST);
 
-        Record record = createRecord(order.getId());
+        Record record = testUtils.createRecord(order.getId());
 
         Mockito.when(dbManager.getFulfilledStateChange(Mockito.anyString())).thenReturn(fulfilledStateChange);
         //exercise
@@ -182,17 +170,17 @@ public class SyncProcessorTest extends ProcessorsBaseUnitTest {
     @Test
     public void testSetTimeAttributesWithUnableToCheckStatusStateChange() {
         //setup
-        Order order = createOrder("SINGLE_FAKE_ORDER_ID");
-        AuditableOrderStateChange fulfilledStateChange = createAuditableOrderStateChange(order);
-        fulfilledStateChange.setTimestamp(NOW);
+        Order order = testUtils.createOrder("SINGLE_FAKE_ORDER_ID");
+        AuditableOrderStateChange fulfilledStateChange = testUtils.createAuditableOrderStateChange(order);
+        fulfilledStateChange.setTimestamp(testUtils.NOW);
         fulfilledStateChange.setNewState(OrderState.FULFILLED);
 
-        AuditableOrderStateChange unableToCheckStatusStateChange = createAuditableOrderStateChange(order);
-        Timestamp endTime = new Timestamp(System.currentTimeMillis() + 1000);
+        AuditableOrderStateChange unableToCheckStatusStateChange = testUtils.createAuditableOrderStateChange(order);
+        Timestamp endTime = new Timestamp(System.currentTimeMillis() + TEN_SECONDS);
         unableToCheckStatusStateChange.setTimestamp(endTime);
         unableToCheckStatusStateChange.setNewState(OrderState.UNABLE_TO_CHECK_STATUS);
 
-        Record record = createRecord(order.getId());
+        Record record = testUtils.createRecord(order.getId());
 
         Mockito.when(dbManager.getFulfilledStateChange(Mockito.anyString())).thenReturn(fulfilledStateChange);
         //exercise
@@ -207,11 +195,11 @@ public class SyncProcessorTest extends ProcessorsBaseUnitTest {
     @Test
     public void testManageRecordWithClosedStateChange() {
         //setup
-        Order order = createOrder(FAKE_ORDER_ID);
-        AuditableOrderStateChange auditableOrderStateChange = createAuditableOrderStateChange(order);
+        Order order = testUtils.createOrder(FAKE_ORDER_ID);
+        AuditableOrderStateChange auditableOrderStateChange = testUtils.createAuditableOrderStateChange(order);
         auditableOrderStateChange.setNewState(OrderState.CLOSED);
-        auditableOrderStateChange.setTimestamp(NOW);
-        Record record = createRecord(order.getId());
+        auditableOrderStateChange.setTimestamp(testUtils.NOW);
+        Record record = testUtils.createRecord(order.getId());
 
         Mockito.when(dbManager.getRecordByOrderId(Mockito.anyString())).thenReturn(record);
         //exercise
@@ -227,11 +215,11 @@ public class SyncProcessorTest extends ProcessorsBaseUnitTest {
     @Test
     public void testManageRecordWithUnableToCheckStatusStateChange() {
         //setup
-        Order order = createOrder(FAKE_ORDER_ID);
-        AuditableOrderStateChange auditableOrderStateChange = createAuditableOrderStateChange(order);
+        Order order = testUtils.createOrder(FAKE_ORDER_ID);
+        AuditableOrderStateChange auditableOrderStateChange = testUtils.createAuditableOrderStateChange(order);
         auditableOrderStateChange.setNewState(OrderState.UNABLE_TO_CHECK_STATUS);
-        auditableOrderStateChange.setTimestamp(NOW);
-        Record record = createRecord(order.getId());
+        auditableOrderStateChange.setTimestamp(testUtils.NOW);
+        Record record = testUtils.createRecord(order.getId());
 
         Mockito.when(dbManager.getRecordByOrderId(Mockito.anyString())).thenReturn(record);
         //exercise
@@ -246,12 +234,12 @@ public class SyncProcessorTest extends ProcessorsBaseUnitTest {
     @Test
     public void testManageRecordWithFulfilledStateChange() {
         //setup
-        Order order = createOrder(FAKE_ORDER_ID);
-        AuditableOrderStateChange auditableOrderStateChange = createAuditableOrderStateChange(order);
+        Order order = testUtils.createOrder(FAKE_ORDER_ID);
+        AuditableOrderStateChange auditableOrderStateChange = testUtils.createAuditableOrderStateChange(order);
         auditableOrderStateChange.setNewState(OrderState.FULFILLED);
-        auditableOrderStateChange.setTimestamp(NOW);
-        Record record = createRecord(order.getId());
-        Timestamp recordStartTime = new Timestamp(System.currentTimeMillis()+1000);
+        auditableOrderStateChange.setTimestamp(testUtils.NOW);
+        Record record = testUtils.createRecord(order.getId());
+        Timestamp recordStartTime = new Timestamp(System.currentTimeMillis()+TEN_SECONDS);
         record.setStartTime(recordStartTime);
 
         Mockito.when(dbManager.getRecordByOrderId(Mockito.anyString())).thenReturn(record);
@@ -266,21 +254,21 @@ public class SyncProcessorTest extends ProcessorsBaseUnitTest {
         //exercise
         syncProcessor.manageRecord(auditableOrderStateChange);
         //verify
-        Assert.assertEquals(NOW, record.getStartTime());
+        Assert.assertEquals(testUtils.NOW, record.getStartTime());
     }
 
     //test case: check if checkOrdersHistory make the calls properly.
     @Test
     public void checkOrdersHistory() {
         //setup
-        Order order = createOrder(FAKE_ORDER_ID);
-        AuditableOrderStateChange auditableOrderStateChange = createAuditableOrderStateChange(order);
+        Order order = testUtils.createOrder(FAKE_ORDER_ID);
+        AuditableOrderStateChange auditableOrderStateChange = testUtils.createAuditableOrderStateChange(order);
         auditableOrderStateChange.setNewState(OrderState.FULFILLED);
         auditableOrderStateChange.setId(1L);
-        AuditableOrderStateChange secondAuditableOrderStateChange = createAuditableOrderStateChange(order);
+        AuditableOrderStateChange secondAuditableOrderStateChange = testUtils.createAuditableOrderStateChange(order);
         secondAuditableOrderStateChange.setNewState(OrderState.CLOSED);
         secondAuditableOrderStateChange.setId(1L);
-        secondAuditableOrderStateChange.setTimestamp(NOW);
+        secondAuditableOrderStateChange.setTimestamp(testUtils.NOW);
         List<AuditableOrderStateChange> stateChanges = new ArrayList<>();
         stateChanges.add(auditableOrderStateChange);
         stateChanges.add(secondAuditableOrderStateChange);
@@ -288,7 +276,7 @@ public class SyncProcessorTest extends ProcessorsBaseUnitTest {
         AuditableOrderIdRecorder recorder = new AuditableOrderIdRecorder();
         recorder.setCurrentId(1L);
         recorder.setId("recorder");
-        Record record = createRecord(order.getId());
+        Record record = testUtils.createRecord(order.getId());
         Mockito.when(dbManager.getRecordByOrderId(Mockito.anyString())).thenReturn(record);
         Mockito.when(dbManager.getIdRecorder()).thenReturn(recorder);
         syncProcessor.checkIdRecorder();

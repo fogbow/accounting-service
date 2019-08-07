@@ -1,8 +1,10 @@
 package cloud.fogbow.accs.core.datastore;
 
+import cloud.fogbow.accs.core.datastore.orderstorage.AuditableOrderStateChange;
 import cloud.fogbow.accs.core.models.AccountingUser;
 import cloud.fogbow.accs.core.models.Record;
 import cloud.fogbow.accs.core.models.UserIdentity;
+import cloud.fogbow.accs.core.models.orders.Order;
 import cloud.fogbow.accs.core.models.orders.OrderState;
 
 import java.sql.Timestamp;
@@ -17,6 +19,7 @@ public class TestUtils {
     public static final String RECORDS_BY_USER = "RECORDS_BY_USER";
     public static final String SELF = "SELF";
     public static final String OTHER_USER = "OTHER";
+    public final Timestamp NOW = new Timestamp(System.currentTimeMillis());
 
     public TestUtils() {}
 
@@ -78,5 +81,23 @@ public class TestUtils {
         }
 
         return records;
+    }
+
+    public Order createOrder(String id) {
+        Order order = new Order();
+        order.setId(id);
+        return order;
+    }
+
+    public AuditableOrderStateChange createAuditableOrderStateChange(Order order) {
+        AuditableOrderStateChange auditableOrderStateChange = new AuditableOrderStateChange();
+        auditableOrderStateChange.setOrder(order);
+        return auditableOrderStateChange;
+    }
+
+    public Record createRecord(String orderId) {
+        Record record = new Record();
+        record.setOrderId(orderId);
+        return record;
     }
 }
