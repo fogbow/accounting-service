@@ -38,6 +38,8 @@ public class RecordServiceTest extends BaseUnitTests {
     private final String DEFAULT_RESOURCE_TYPE = "compute";
     private final String FAKE_REQ_MEMBER = "mockedRequestingMember";
     private final int DEFAULT_RECORDS_SIZE = 2;
+    private final int TWO_MINUTES = 120000;
+    private final int THREE_MINUTES = 180000;
 
     private RecordService recordService;
 
@@ -75,8 +77,8 @@ public class RecordServiceTest extends BaseUnitTests {
     @Test
     public void testCheckIntervalWhenBillingPredictions() {
         //setup
-        Timestamp startTimestamp = new Timestamp(System.currentTimeMillis() + 60000*2);
-        Timestamp endTimestamp = new Timestamp(System.currentTimeMillis() + 60000*3);
+        Timestamp startTimestamp = new Timestamp(System.currentTimeMillis() + TWO_MINUTES);
+        Timestamp endTimestamp = new Timestamp(System.currentTimeMillis() + THREE_MINUTES);
 
         try {
             //exercise
@@ -134,11 +136,11 @@ public class RecordServiceTest extends BaseUnitTests {
     @Test
     public void testGetSelfRecords() throws ParseException {
         //setup
-        mockDatabaseOperations(testUtils.RECORDS_BY_USER, null, testUtils.SELF, null, 2);
+        mockDatabaseOperations(testUtils.RECORDS_BY_USER, null, testUtils.SELF, null, DEFAULT_RECORDS_SIZE);
         SystemUser systemUser = new SystemUser(testUtils.SELF_USER_KEY, testUtils.SELF, testUtils.SELF_USER_PROVIDER_ID);
 
         //exercise
-        List<Record> records = recordService.getSelfRecords(testUtils.SELF, DEFAULT_RESOURCE_TYPE, TEST_DATE, TEST_DATE, systemUser);
+        recordService.getSelfRecords(testUtils.SELF, DEFAULT_RESOURCE_TYPE, TEST_DATE, TEST_DATE, systemUser);
 
         //verify
         Mockito.verify(recordService, Mockito.times(1)).getOpenedRecords(Mockito.any(AccountingUser.class), Mockito.anyString(), Mockito.anyString(), Mockito.any(Timestamp.class), Mockito.any(Timestamp.class));
@@ -154,11 +156,8 @@ public class RecordServiceTest extends BaseUnitTests {
         AccountingUser user = new AccountingUser(new UserIdentity(  ANY_VALUE, ANY_VALUE));
         mockDatabaseOperations(testUtils.RECORDS_BY_USER, null, testUtils.OTHER_USER, user, DEFAULT_RECORDS_SIZE);
 
-        SystemUser systemUser = new SystemUser(ANY_VALUE, ANY_VALUE, ANY_VALUE);
-
         //exercise
-        List<Record> records = recordService.getUserRecords(ANY_VALUE, ANY_VALUE, ANY_VALUE, DEFAULT_RESOURCE_TYPE,
-                TEST_DATE, TEST_DATE);
+        recordService.getUserRecords(ANY_VALUE, ANY_VALUE, ANY_VALUE, DEFAULT_RESOURCE_TYPE, TEST_DATE, TEST_DATE);
 
         //verify
         Mockito.verify(recordService, Mockito.times(1)).getOpenedRecords(Mockito.any(AccountingUser.class), Mockito.anyString(), Mockito.anyString(), Mockito.any(Timestamp.class), Mockito.any(Timestamp.class));
