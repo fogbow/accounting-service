@@ -1,8 +1,8 @@
 package cloud.fogbow.accs.core.datastore.services;
 
 import cloud.fogbow.accs.constants.Messages;
-import cloud.fogbow.accs.core.datastore.BaseUnitTests;
-import cloud.fogbow.accs.core.datastore.TestUtils;
+import cloud.fogbow.accs.core.BaseUnitTests;
+import cloud.fogbow.accs.core.TestUtils;
 import cloud.fogbow.accs.core.datastore.orderstorage.RecordRepository;
 import cloud.fogbow.accs.core.exceptions.InvalidIntervalException;
 import cloud.fogbow.accs.core.models.AccountingUser;
@@ -13,17 +13,8 @@ import cloud.fogbow.common.models.SystemUser;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.powermock.modules.junit4.PowerMockRunnerDelegate;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.sql.Timestamp;
 import java.text.ParseException;
