@@ -19,7 +19,7 @@ public class TestUtils {
     public static final String RECORDS_BY_USER = "RECORDS_BY_USER";
     public static final String SELF = "SELF";
     public static final String OTHER_USER = "OTHER";
-    public final Timestamp NOW = new Timestamp(System.currentTimeMillis());
+    public final int TEN_SECONDS = 10000;
 
     public TestUtils() {}
 
@@ -89,15 +89,30 @@ public class TestUtils {
         return order;
     }
 
-    public AuditableOrderStateChange createAuditableOrderStateChange(Order order) {
+    public AuditableOrderStateChange createAuditableOrderStateChange(Order order, OrderState newState) {
         AuditableOrderStateChange auditableOrderStateChange = new AuditableOrderStateChange();
         auditableOrderStateChange.setOrder(order);
+        auditableOrderStateChange.setNewState(newState);
         return auditableOrderStateChange;
     }
 
     public Record createRecord(String orderId) {
         Record record = new Record();
         record.setOrderId(orderId);
+        Timestamp startTime = new Timestamp(System.currentTimeMillis());
+        Timestamp endTime = new Timestamp(System.currentTimeMillis() + TEN_SECONDS);
+        record.setStartTime(startTime);
+        record.setEndTime(endTime);
         return record;
+    }
+
+    public Record createSimplestRecord(String orderId) {
+        Record record = new Record();
+        record.setOrderId(orderId);
+        return record;
+    }
+
+    public Timestamp getNOW() {
+        return new Timestamp(System.currentTimeMillis());
     }
 }
