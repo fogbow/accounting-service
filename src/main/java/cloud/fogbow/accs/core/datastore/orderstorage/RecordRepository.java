@@ -13,12 +13,12 @@ import java.util.List;
 @Repository
 public interface RecordRepository extends JpaRepository<Record, String> {
 
-    Record findByOrderId(String id);
+    public Record findByOrderId(String id);
 
-    List<Record> findByUserAndRequestingMemberAndResourceTypeAndStartDateLessThanEqualAndEndDateGreaterThanEqual(
+    public List<Record> findByUserAndRequestingMemberAndResourceTypeAndStartDateLessThanEqualAndEndDateGreaterThanEqual(
             AccountingUser user, String requestingMember, String resourceType, Timestamp endTime, Timestamp startTime);
 
-    List<Record> findByUserAndRequestingMemberAndResourceTypeAndStartDateLessThanEqualAndStartDateGreaterThanEqualAndStateEquals(
+    public List<Record> findByUserAndRequestingMemberAndResourceTypeAndStartDateLessThanEqualAndStartDateGreaterThanEqualAndStateEquals(
             AccountingUser user, String requestingMember, String resourceType, Timestamp endTime, Timestamp startTime, OrderState state);
 
 }
