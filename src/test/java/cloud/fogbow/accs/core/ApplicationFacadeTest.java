@@ -22,6 +22,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.security.PublicKey;
 import java.security.interfaces.RSAPublicKey;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,7 +36,7 @@ public class ApplicationFacadeTest extends BaseUnitTests{
     @Before
     public void setup() {
         super.setup();
-        this.applicationFacade = new ApplicationFacade();
+        this.applicationFacade = Mockito.spy(new ApplicationFacade());
         plugin = Mockito.mock(AccountingAuthPlugin.class);
         applicationFacade.setAuthorizationPlugin(plugin);
 
@@ -69,6 +70,27 @@ public class ApplicationFacadeTest extends BaseUnitTests{
 
         applicationFacade.getUserRecords(testUtils.FAKE_USER_ID, testUtils.FAKE_REQUESTING_MEMBER, testUtils.FAKE_PROVIDER_MEMBER, testUtils.DEFAULT_RESOURCE_TYPE,
             testUtils.FAKE_INTERVAL, testUtils.FAKE_INTERVAL, testUtils.FAKE_USER_TOKEN);
+
+        Mockito.verify(applicationFacade, Mockito.times(1)).handleAuthIssues(Mockito.anyString(), Mockito.eq(AccountingOperationType.OTHERS_BILLING));
+        Mockito.verify(dbManager, Mockito.times(1)).getUserRecords(
+            Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString());
+        Mockito.verify(applicationFacade, Mockito.times(getFakeRecordsCollection().size())).mountResponseRecord(Mockito.any(Record.class));
+    }
+
+    @Test
+    public void testGetSelfRecords() throws FogbowException, ParseException {
+        DatabaseManager dbManager = testUtils.mockDbManager();
+        Mockito.when(plugin.isAuthorized(Mockito.any(SystemUser.class), Mockito.any(AccountingOperation.class))).thenReturn(true);
+        Mockito.when(dbManager.getSelfRecords(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.any(SystemUser.class)))
+                .thenReturn(getFakeRecordsCollection());
+
+        applicationFacade.getSelfRecords(testUtils.FAKE_REQUESTING_MEMBER, testUtils.DEFAULT_RESOURCE_TYPE, testUtils.FAKE_INTERVAL,
+            testUtils.FAKE_INTERVAL, testUtils.FAKE_USER_TOKEN);
+
+        Mockito.verify(applicationFacade, Mockito.times(1)).handleAuthIssues(Mockito.anyString(), Mockito.eq(AccountingOperationType.OWN_BILLING));
+        Mockito.verify(dbManager, Mockito.times(1)).getSelfRecords(
+                Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.any(SystemUser.class));
+        Mockito.verify(applicationFacade, Mockito.times(getFakeRecordsCollection().size())).mountResponseRecord(Mockito.any(Record.class));
     }
 
     private List<Record> getFakeRecordsCollection() {
