@@ -233,7 +233,7 @@ public class SyncProcessorTest extends BaseUnitTests {
         //exercise
         syncProcessor.manageRecord(auditableOrderStateChange);
         //verify
-        Assert.assertEquals(testUtils.getNOW(), record.getStartTime());
+        Assert.assertEquals(auditableOrderStateChange.getTimestamp(), record.getStartTime());
     }
 
     //test case: check if checkOrdersHistory make the calls properly.
