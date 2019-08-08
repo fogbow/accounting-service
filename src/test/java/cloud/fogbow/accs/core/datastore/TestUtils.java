@@ -1,8 +1,10 @@
 package cloud.fogbow.accs.core.datastore;
 
+import cloud.fogbow.accs.core.datastore.orderstorage.AuditableOrderStateChange;
 import cloud.fogbow.accs.core.models.AccountingUser;
 import cloud.fogbow.accs.core.models.Record;
 import cloud.fogbow.accs.core.models.UserIdentity;
+import cloud.fogbow.accs.core.models.orders.Order;
 import cloud.fogbow.accs.core.models.orders.OrderState;
 
 import java.sql.Timestamp;
@@ -17,12 +19,15 @@ public class TestUtils {
     public static final String RECORDS_BY_USER = "RECORDS_BY_USER";
     public static final String SELF = "SELF";
     public static final String OTHER_USER = "OTHER";
+    public final int TEN_SECONDS = 10000;
+    public final String FAKE_PROVIDER = "mockedProvider";
+    public final String FAKE_ID = "mockedId";
 
     public TestUtils() {}
 
     public AccountingUser getAccountingUser() {
         return new AccountingUser(
-            new UserIdentity("mockedProvider", "mockedId")
+            new UserIdentity(FAKE_PROVIDER, FAKE_ID)
         );
     }
 
@@ -78,5 +83,38 @@ public class TestUtils {
         }
 
         return records;
+    }
+
+    public Order createOrder(String id) {
+        Order order = new Order();
+        order.setId(id);
+        return order;
+    }
+
+    public AuditableOrderStateChange createAuditableOrderStateChange(Order order, OrderState newState) {
+        AuditableOrderStateChange auditableOrderStateChange = new AuditableOrderStateChange();
+        auditableOrderStateChange.setOrder(order);
+        auditableOrderStateChange.setNewState(newState);
+        return auditableOrderStateChange;
+    }
+
+    public Record createRecord(String orderId) {
+        Record record = new Record();
+        record.setOrderId(orderId);
+        Timestamp startTime = new Timestamp(System.currentTimeMillis());
+        Timestamp endTime = new Timestamp(System.currentTimeMillis() + TEN_SECONDS);
+        record.setStartTime(startTime);
+        record.setEndTime(endTime);
+        return record;
+    }
+
+    public Record createSimplestRecord(String orderId) {
+        Record record = new Record();
+        record.setOrderId(orderId);
+        return record;
+    }
+
+    public Timestamp getNOW() {
+        return new Timestamp(System.currentTimeMillis());
     }
 }

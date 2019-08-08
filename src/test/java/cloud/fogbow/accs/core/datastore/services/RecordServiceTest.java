@@ -13,17 +13,8 @@ import cloud.fogbow.common.models.SystemUser;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.powermock.modules.junit4.PowerMockRunnerDelegate;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.sql.Timestamp;
 import java.text.ParseException;
@@ -109,7 +100,7 @@ public class RecordServiceTest extends BaseUnitTests {
 
         //exercise
         List<Record> records = recordService.getOpenedRecords(testUtils.getAccountingUser(), FAKE_REQ_MEMBER, DEFAULT_RESOURCE_TYPE,
-            new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis()));
+                new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis()));
 
         //verify
         Assert.assertEquals(2, records.size());
@@ -181,15 +172,15 @@ public class RecordServiceTest extends BaseUnitTests {
         switch (userType) {
             case TestUtils.SELF:
                 Mockito.doReturn(testUtils.createSelfUserRecords(size)).when(recordService)
-                    .getOpenedRecords(Mockito.any(AccountingUser.class), Mockito.anyString(), Mockito.anyString(), Mockito.any(Timestamp.class), Mockito.any(Timestamp.class));
+                        .getOpenedRecords(Mockito.any(AccountingUser.class), Mockito.anyString(), Mockito.anyString(), Mockito.any(Timestamp.class), Mockito.any(Timestamp.class));
                 Mockito.doReturn(testUtils.createSelfUserRecords(size)).when(recordService)
-                    .getClosedRecords(Mockito.any(AccountingUser.class), Mockito.anyString(), Mockito.anyString(), Mockito.any(Timestamp.class), Mockito.any(Timestamp.class));
+                        .getClosedRecords(Mockito.any(AccountingUser.class), Mockito.anyString(), Mockito.anyString(), Mockito.any(Timestamp.class), Mockito.any(Timestamp.class));
                 break;
             case TestUtils.OTHER_USER:
                 Mockito.doReturn(testUtils.createRecordsOwnedByUser(user, size)).when(recordService)
-                    .getOpenedRecords(Mockito.any(AccountingUser.class), Mockito.anyString(), Mockito.anyString(), Mockito.any(Timestamp.class), Mockito.any(Timestamp.class));
+                        .getOpenedRecords(Mockito.any(AccountingUser.class), Mockito.anyString(), Mockito.anyString(), Mockito.any(Timestamp.class), Mockito.any(Timestamp.class));
                 Mockito.doReturn(new ArrayList<>()).when(recordService)
-                    .getClosedRecords(Mockito.any(AccountingUser.class), Mockito.anyString(), Mockito.anyString(), Mockito.any(Timestamp.class), Mockito.any(Timestamp.class));
+                        .getClosedRecords(Mockito.any(AccountingUser.class), Mockito.anyString(), Mockito.anyString(), Mockito.any(Timestamp.class), Mockito.any(Timestamp.class));
                 break;
         }
     }
