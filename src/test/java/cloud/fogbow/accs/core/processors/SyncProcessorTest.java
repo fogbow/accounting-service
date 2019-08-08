@@ -110,7 +110,7 @@ public class SyncProcessorTest extends BaseUnitTests {
         Assert.assertEquals(syncProcessor.getDuration(rec.getEndTime(), rec.getStartTime()), rec.getDuration());
     }
 
-    //test case: check if only startime is changed when the stateChange is a fulfilled one.
+    //test case: check if only startTime is changed when the stateChange is a fulfilled one.
     @Test
     public void testSetTimeAttributesWithFulFilledStateChange() {
         //setup

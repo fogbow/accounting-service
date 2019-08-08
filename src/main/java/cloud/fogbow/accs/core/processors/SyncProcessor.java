@@ -1,5 +1,6 @@
 package cloud.fogbow.accs.core.processors;
 
+import cloud.fogbow.accs.constants.Messages;
 import cloud.fogbow.accs.core.datastore.DatabaseManager;
 import cloud.fogbow.accs.core.datastore.orderstorage.AuditableOrderIdRecorder;
 import cloud.fogbow.accs.core.datastore.orderstorage.AuditableOrderStateChange;
@@ -22,8 +23,9 @@ import java.util.List;
 
 @Component
 public class SyncProcessor implements Runnable {
-	private static final int SLEEP_TIME = 60000; // One hour
-	private static final Logger logger = LoggerFactory.getLogger(SyncProcessor.class);
+	private static final int SLEEP_TIME = 60000; // One minute
+	private static final Logger LOGGER = LoggerFactory.getLogger(SyncProcessor.class);
+	private final String DATE_FORMAT = "yyyy-MM-dd";
 
 	private AuditableOrderIdRecorder idRecorder;
 
@@ -36,17 +38,17 @@ public class SyncProcessor implements Runnable {
 	@Override
 	public void run() {		
 		Boolean isActive = true;
-		while(isActive) {			
-			logger.info("Updating tables.");
+		while(isActive) {
+			LOGGER.info(Messages.Info.UPDATING_TABLES);
 			try {
 				checkIdRecorder();
 				checkOrdersHistory();
 
-				logger.info("Finish updating.");
+				LOGGER.info(Messages.Info.FINISHING_UPDATE);
 
 				Thread.sleep(SLEEP_TIME);
 			} catch (InterruptedException e) {
-				logger.info("Problem on updating records.");
+				LOGGER.info(String.format(Messages.Info.UPDATING_PROBLEMS, "records"));
 				isActive = false;
 			}
 		}
@@ -165,7 +167,7 @@ public class SyncProcessor implements Runnable {
 
 	protected Timestamp extractDateFromTimestamp(Timestamp timestamp) {
 		try {
-			DateFormat f = new SimpleDateFormat("yyyy-MM-dd");
+			DateFormat f = new SimpleDateFormat(DATE_FORMAT);
 			Date d = f.parse(f.format((Date) timestamp));
 			return new Timestamp(d.getTime());
 		} catch (ParseException pe) {

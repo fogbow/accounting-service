@@ -20,12 +20,14 @@ public class TestUtils {
     public static final String SELF = "SELF";
     public static final String OTHER_USER = "OTHER";
     public final int TEN_SECONDS = 10000;
+    public final String FAKE_PROVIDER = "mockedProvider";
+    public final String FAKE_ID = "mockedId";
 
     public TestUtils() {}
 
     public AccountingUser getAccountingUser() {
         return new AccountingUser(
-            new UserIdentity("mockedProvider", "mockedId")
+            new UserIdentity(FAKE_PROVIDER, FAKE_ID)
         );
     }
 
