@@ -6,6 +6,7 @@ import cloud.fogbow.accs.core.datastore.services.RecordService;
 import cloud.fogbow.as.core.util.AuthenticationUtil;
 import org.apache.log4j.Logger;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -14,6 +15,7 @@ import org.powermock.modules.junit4.PowerMockRunnerDelegate;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+@Ignore
 // to avoid classLoader conflict
 @PowerMockIgnore({"javax.management.*"})
 @PrepareForTest({RecordRepository.class, RecordService.class, AuthenticationUtil.class, AccountingPublicKeysHolder.class, DatabaseManager.class})

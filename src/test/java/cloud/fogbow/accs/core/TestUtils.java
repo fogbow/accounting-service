@@ -1,9 +1,11 @@
 package cloud.fogbow.accs.core;
 
+import cloud.fogbow.accs.core.datastore.orderstorage.AuditableOrderStateChange;
 import cloud.fogbow.accs.core.datastore.DatabaseManager;
 import cloud.fogbow.accs.core.models.AccountingUser;
 import cloud.fogbow.accs.core.models.Record;
 import cloud.fogbow.accs.core.models.UserIdentity;
+import cloud.fogbow.accs.core.models.orders.Order;
 import cloud.fogbow.accs.core.models.orders.OrderState;
 import cloud.fogbow.as.core.util.AuthenticationUtil;
 import cloud.fogbow.common.exceptions.FogbowException;
@@ -33,12 +35,15 @@ public class TestUtils {
     protected final String FAKE_PROVIDER_MEMBER = "PROVIDER";
     protected final String FAKE_INTERVAL = "2000-01-01";
     protected final String DEFAULT_RESOURCE_TYPE = "compute";
+    public final int TEN_SECONDS = 10000;
+    public final String FAKE_PROVIDER = "mockedProvider";
+    public final String FAKE_ID = "mockedId";
 
     public TestUtils() {}
 
     public AccountingUser getAccountingUser() {
         return new AccountingUser(
-            new UserIdentity("mockedProvider", "mockedId")
+            new UserIdentity(FAKE_PROVIDER, FAKE_ID)
         );
     }
 
@@ -115,5 +120,38 @@ public class TestUtils {
         PowerMockito.mockStatic(DatabaseManager.class);
         BDDMockito.given(DatabaseManager.getInstance()).willReturn(dbManager);
         return dbManager;
+    }
+    
+    public Order createOrder(String id) {
+        Order order = new Order();
+        order.setId(id);
+        return order;
+    }
+
+    public AuditableOrderStateChange createAuditableOrderStateChange(Order order, OrderState newState) {
+        AuditableOrderStateChange auditableOrderStateChange = new AuditableOrderStateChange();
+        auditableOrderStateChange.setOrder(order);
+        auditableOrderStateChange.setNewState(newState);
+        return auditableOrderStateChange;
+    }
+
+    public Record createRecord(String orderId) {
+        Record record = new Record();
+        record.setOrderId(orderId);
+        Timestamp startTime = new Timestamp(System.currentTimeMillis());
+        Timestamp endTime = new Timestamp(System.currentTimeMillis() + TEN_SECONDS);
+        record.setStartTime(startTime);
+        record.setEndTime(endTime);
+        return record;
+    }
+
+    public Record createSimplestRecord(String orderId) {
+        Record record = new Record();
+        record.setOrderId(orderId);
+        return record;
+    }
+
+    public Timestamp getNOW() {
+        return new Timestamp(System.currentTimeMillis());
     }
 }

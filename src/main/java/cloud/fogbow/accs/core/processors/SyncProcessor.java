@@ -1,5 +1,6 @@
 package cloud.fogbow.accs.core.processors;
 
+import cloud.fogbow.accs.constants.Messages;
 import cloud.fogbow.accs.core.datastore.DatabaseManager;
 import cloud.fogbow.accs.core.datastore.orderstorage.AuditableOrderIdRecorder;
 import cloud.fogbow.accs.core.datastore.orderstorage.AuditableOrderStateChange;
@@ -22,8 +23,9 @@ import java.util.List;
 
 @Component
 public class SyncProcessor implements Runnable {
-	private static final int SLEEP_TIME = 60000; // One hour
-	private static final Logger logger = LoggerFactory.getLogger(SyncProcessor.class);
+	private static final int SLEEP_TIME = 60000; // One minute
+	private static final Logger LOGGER = LoggerFactory.getLogger(SyncProcessor.class);
+	private final String DATE_FORMAT = "yyyy-MM-dd";
 
 	private AuditableOrderIdRecorder idRecorder;
 
@@ -36,29 +38,29 @@ public class SyncProcessor implements Runnable {
 	@Override
 	public void run() {		
 		Boolean isActive = true;
-		while(isActive) {			
-			logger.info("Updating tables.");
+		while(isActive) {
+			LOGGER.info(Messages.Info.UPDATING_TABLES);
 			try {
 				checkIdRecorder();
 				checkOrdersHistory();
 
-				logger.info("Finish updating.");
+				LOGGER.info(Messages.Info.FINISHING_UPDATE);
 
 				Thread.sleep(SLEEP_TIME);
 			} catch (InterruptedException e) {
-				logger.info("Problem on updating records.");
+				LOGGER.info(String.format(Messages.Info.UPDATING_PROBLEMS, "records"));
 				isActive = false;
 			}
 		}
 	}
 
-	private void checkIdRecorder() {
+	protected void checkIdRecorder() {
 		if (idRecorder == null) {
 			idRecorder = dbManager.getIdRecorder();
 		}
 	}
 
-	private void checkOrdersHistory() {
+	protected void checkOrdersHistory() {
 		List<AuditableOrderStateChange> auditableOrders = dbManager.getAllAuditableOrdersFromCurrentId(idRecorder.getCurrentId());
 
 		for (AuditableOrderStateChange auditOrder : auditableOrders) {
@@ -73,7 +75,7 @@ public class SyncProcessor implements Runnable {
 		}
 	}
 
-	private void manageRecord(AuditableOrderStateChange auditOrder) {
+	protected void manageRecord(AuditableOrderStateChange auditOrder) {
 		Record rec = dbManager.getRecordByOrderId(auditOrder.getOrder().getId());
 
 		if (rec == null) {
@@ -99,7 +101,7 @@ public class SyncProcessor implements Runnable {
 		}
 	}
 
-	private void createRecord(AuditableOrderStateChange auditOrder) {
+	protected void createRecord(AuditableOrderStateChange auditOrder) {
 		Order ord = auditOrder.getOrder();
 
 		AccountingUser user = new AccountingUser(
@@ -124,7 +126,7 @@ public class SyncProcessor implements Runnable {
 		dbManager.saveRecord(rec);
 	}
 
-	private void setTimeAttributes(Order ord, AuditableOrderStateChange auditOrder, Record rec) {
+	protected void setTimeAttributes(Order ord, AuditableOrderStateChange auditOrder, Record rec) {
 		AuditableOrderStateChange auditOrderToFulfilledState = dbManager.getFulfilledStateChange(ord.getId());
 
 		if (auditOrderToFulfilledState != null && auditOrderToFulfilledState.getTimestamp().getTime() < auditOrder.getTimestamp().getTime()) {
@@ -145,13 +147,13 @@ public class SyncProcessor implements Runnable {
 		}
 	}
 
-	private void setClosedOrderDuration(AuditableOrderStateChange auditOrder, Record rec) {
+	protected void setClosedOrderDuration(AuditableOrderStateChange auditOrder, Record rec) {
 		if (orderHasFinished(auditOrder.getNewState()) && rec.getDuration() == 0) {
 			rec.setDuration(getDuration(rec.getEndTime(), rec.getStartTime()));
 		}
 	}
 
-	private long getDuration(Timestamp intervalEnd, Timestamp intervalStart) {
+	protected long getDuration(Timestamp intervalEnd, Timestamp intervalStart) {
 		if (intervalEnd != null && intervalStart != null) {
 			return intervalEnd.getTime() - intervalStart.getTime();
 		}
@@ -159,13 +161,13 @@ public class SyncProcessor implements Runnable {
 		return 0;
 	}
 
-	private boolean orderHasFinished(OrderState state) {
+	protected boolean orderHasFinished(OrderState state) {
 		return state.equals((OrderState.CLOSED)) || state.equals(OrderState.FAILED_AFTER_SUCCESSFUL_REQUEST) || state.equals((OrderState.DEACTIVATED));
 	}
 
-	private Timestamp extractDateFromTimestamp(Timestamp timestamp) {
+	protected Timestamp extractDateFromTimestamp(Timestamp timestamp) {
 		try {
-			DateFormat f = new SimpleDateFormat("yyyy-MM-dd");
+			DateFormat f = new SimpleDateFormat(DATE_FORMAT);
 			Date d = f.parse(f.format((Date) timestamp));
 			return new Timestamp(d.getTime());
 		} catch (ParseException pe) {

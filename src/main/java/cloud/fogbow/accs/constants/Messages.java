@@ -17,5 +17,8 @@ public class Messages {
 
 	public static class Info {
 		public static final String RECEIVING_GET_VERSION_REQUEST = "Get request for version received.";
+		public static final String UPDATING_TABLES = "Updating tables.";
+		public static final String FINISHING_UPDATE = "Finishing update.";
+		public static final String UPDATING_PROBLEMS = "Problem on updating %s.";
 	}
 }
