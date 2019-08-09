@@ -30,8 +30,8 @@ import static org.junit.Assert.*;
 
 public class ApplicationFacadeTest extends BaseUnitTests{
 
-    ApplicationFacade applicationFacade;
-    AccountingAuthPlugin plugin;
+    private ApplicationFacade applicationFacade;
+    private AccountingAuthPlugin plugin;
 
     @Before
     public void setup() {
@@ -48,45 +48,57 @@ public class ApplicationFacadeTest extends BaseUnitTests{
 
     }
 
-    @Test(expected = UnauthorizedRequestException.class)
-    public void testHandleAuthIssuesWithUnauthorizedUser() throws FogbowException{
+    //test case: tests if when the user has no authorization to complete that operation the method
+    //throws an UnauthorizedRequestException
+    @Test(expected = UnauthorizedRequestException.class)//verify
+    public void testHandleAuthIssuesWithUnauthorizedUser() throws FogbowException {
+        //verify
         Mockito.when(plugin.isAuthorized(Mockito.any(SystemUser.class), Mockito.any(AccountingOperation.class))).thenReturn(false);
+        //exercise
         applicationFacade.handleAuthIssues(testUtils.FAKE_USER_TOKEN, AccountingOperationType.OTHERS_BILLING);
     }
 
+    //test case: Check if the user can complete the request when it has authorization to do so
     @Test
-    public void testHandleAuthIssuesWithAuthorizedUser() throws FogbowException{
+    public void testHandleAuthIssuesWithAuthorizedUser() throws FogbowException {
+        //verify
         Mockito.when(plugin.isAuthorized(Mockito.any(SystemUser.class), Mockito.any(AccountingOperation.class))).thenReturn(true);
+        //exercise
         SystemUser user = applicationFacade.handleAuthIssues(testUtils.FAKE_USER_TOKEN, AccountingOperationType.OWN_BILLING);
+        //verify
         Assert.assertEquals(user, testUtils.getSysUser());
     }
 
+    //test case: check if getUserRecords make the calls it has to in the happy path.
     @Test
-    public void testGetUserRecords() throws Exception{
+    public void testGetUserRecords() throws Exception {
+        //setup
         DatabaseManager dbManager = testUtils.mockDbManager();
         Mockito.when(plugin.isAuthorized(Mockito.any(SystemUser.class), Mockito.any(AccountingOperation.class))).thenReturn(true);
         Mockito.when(dbManager.getUserRecords(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
             .thenReturn(getFakeRecordsCollection());
-
+        //exercise
         applicationFacade.getUserRecords(testUtils.FAKE_USER_ID, testUtils.FAKE_REQUESTING_MEMBER, testUtils.FAKE_PROVIDER_MEMBER, testUtils.DEFAULT_RESOURCE_TYPE,
             testUtils.FAKE_INTERVAL, testUtils.FAKE_INTERVAL, testUtils.FAKE_USER_TOKEN);
-
+        //verify
         Mockito.verify(applicationFacade, Mockito.times(1)).handleAuthIssues(Mockito.anyString(), Mockito.eq(AccountingOperationType.OTHERS_BILLING));
         Mockito.verify(dbManager, Mockito.times(1)).getUserRecords(
             Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString());
         Mockito.verify(applicationFacade, Mockito.times(getFakeRecordsCollection().size())).mountResponseRecord(Mockito.any(Record.class));
     }
 
+    //test case: check if getSelfRecords make the calls it has to in the happy path.
     @Test
     public void testGetSelfRecords() throws FogbowException, ParseException {
+        //setup
         DatabaseManager dbManager = testUtils.mockDbManager();
         Mockito.when(plugin.isAuthorized(Mockito.any(SystemUser.class), Mockito.any(AccountingOperation.class))).thenReturn(true);
         Mockito.when(dbManager.getSelfRecords(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.any(SystemUser.class)))
                 .thenReturn(getFakeRecordsCollection());
-
+        //exercise
         applicationFacade.getSelfRecords(testUtils.FAKE_REQUESTING_MEMBER, testUtils.DEFAULT_RESOURCE_TYPE, testUtils.FAKE_INTERVAL,
             testUtils.FAKE_INTERVAL, testUtils.FAKE_USER_TOKEN);
-
+        //verify
         Mockito.verify(applicationFacade, Mockito.times(1)).handleAuthIssues(Mockito.anyString(), Mockito.eq(AccountingOperationType.OWN_BILLING));
         Mockito.verify(dbManager, Mockito.times(1)).getSelfRecords(
                 Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.any(SystemUser.class));
