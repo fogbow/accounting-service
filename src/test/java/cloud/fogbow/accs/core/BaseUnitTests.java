@@ -1,7 +1,10 @@
-package cloud.fogbow.accs.core.datastore;
+package cloud.fogbow.accs.core;
 
+import cloud.fogbow.accs.core.datastore.DatabaseManager;
 import cloud.fogbow.accs.core.datastore.orderstorage.RecordRepository;
 import cloud.fogbow.accs.core.datastore.services.RecordService;
+import cloud.fogbow.as.core.util.AuthenticationUtil;
+import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.runner.RunWith;
@@ -15,12 +18,13 @@ import org.springframework.test.context.junit4.SpringRunner;
 @Ignore
 // to avoid classLoader conflict
 @PowerMockIgnore({"javax.management.*"})
-@PrepareForTest({RecordRepository.class, RecordService.class})
+@PrepareForTest({RecordRepository.class, RecordService.class, AuthenticationUtil.class, AccountingPublicKeysHolder.class, DatabaseManager.class})
 @RunWith(PowerMockRunner.class)
 @PowerMockRunnerDelegate(SpringRunner.class)
 @SpringBootTest
 public class BaseUnitTests {
 
+    protected final Logger LOGGER = Logger.getLogger(BaseUnitTests.class);
     protected TestUtils testUtils;
 
     @Before

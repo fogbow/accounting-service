@@ -81,14 +81,14 @@ public class ApplicationFacade {
         this.authorizationPlugin = authorizationPlugin;
     }
 
-    private Record mountResponseRecord(cloud.fogbow.accs.core.models.Record dbRecord) {
+    protected Record mountResponseRecord(cloud.fogbow.accs.core.models.Record dbRecord) {
         return (new Record(dbRecord.getId(), dbRecord.getOrderId(), dbRecord.getResourceType(), dbRecord.getSpec(),
                            dbRecord.getRequestingMember(), dbRecord.getStartTime(), dbRecord.getStartDate(),
                            dbRecord.getEndTime(), dbRecord.getEndDate(), dbRecord.getDuration(), dbRecord.getState()));
 
     }
 
-    private SystemUser handleAuthIssues(String systemUserToken, AccountingOperationType operationType) throws FogbowException{
+    protected SystemUser handleAuthIssues(String systemUserToken, AccountingOperationType operationType) throws FogbowException{
         SystemUser requester = AuthenticationUtil.authenticate(
                 AccountingPublicKeysHolder.getInstance().getAsPublicKey(), systemUserToken);
 
