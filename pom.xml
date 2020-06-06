@@ -19,7 +19,7 @@
 	</parent>
 
 	<properties>
-		<powermock.version>1.7.1</powermock.version>
+		<powermock.version>1.7.4</powermock.version>
 		<java.version>1.8</java.version>
 	</properties>
 
