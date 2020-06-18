@@ -4,7 +4,7 @@ import cloud.fogbow.accs.constants.Messages;
 import cloud.fogbow.accs.constants.SystemConstants;
 import cloud.fogbow.accs.core.ApplicationFacade;
 import cloud.fogbow.common.constants.ApiDocumentation;
-import cloud.fogbow.common.exceptions.UnexpectedException;
+import cloud.fogbow.common.exceptions.InternalServerErrorException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.log4j.Logger;
@@ -28,7 +28,7 @@ public class PublicKey {
 
     @ApiOperation(value = ApiDocumentation.PublicKey.GET_OPERATION)
     @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity<cloud.fogbow.accs.api.http.response.PublicKey> getPublicKey() throws UnexpectedException {
+    public ResponseEntity<cloud.fogbow.accs.api.http.response.PublicKey> getPublicKey() throws InternalServerErrorException {
         try {
             String publicKeyValue = ApplicationFacade.getInstance().getPublicKey();
             cloud.fogbow.accs.api.http.response.PublicKey publicKey = new cloud.fogbow.accs.api.http.response.PublicKey(publicKeyValue);

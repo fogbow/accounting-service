@@ -11,7 +11,7 @@ import cloud.fogbow.accs.constants.SystemConstants;
 import cloud.fogbow.as.core.util.AuthenticationUtil;
 import cloud.fogbow.common.exceptions.FogbowException;
 import cloud.fogbow.common.exceptions.UnauthorizedRequestException;
-import cloud.fogbow.common.exceptions.UnexpectedException;
+import cloud.fogbow.common.exceptions.InternalServerErrorException;
 import cloud.fogbow.common.models.SystemUser;
 import cloud.fogbow.common.plugins.authorization.AuthorizationPlugin;
 import cloud.fogbow.common.util.CryptoUtil;
@@ -68,12 +68,12 @@ public class ApplicationFacade {
         return records;
     }
 
-    public String getPublicKey() throws UnexpectedException {
+    public String getPublicKey() throws InternalServerErrorException {
         // There is no need to authenticate the user or authorize this operation
         try {
             return CryptoUtil.toBase64(ServiceAsymmetricKeysHolder.getInstance().getPublicKey());
-        } catch (IOException | GeneralSecurityException e) {
-            throw new UnexpectedException(e.getMessage(), e);
+        } catch (GeneralSecurityException e) {
+            throw new InternalServerErrorException(e.getMessage());
         }
     }
 
@@ -99,7 +99,7 @@ public class ApplicationFacade {
         return requester;
     }
 
-    private void checkAuthorization(SystemUser systemUser, AccountingOperation operation) throws UnauthorizedRequestException, UnexpectedException {
+    private void checkAuthorization(SystemUser systemUser, AccountingOperation operation) throws UnauthorizedRequestException, InternalServerErrorException {
         if (!authorizationPlugin.isAuthorized(systemUser, operation)) {
             throw new UnauthorizedRequestException(Messages.Exception.UNAUTHORIZED_OPERATION);
         }

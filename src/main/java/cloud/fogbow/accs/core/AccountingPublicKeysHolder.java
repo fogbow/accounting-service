@@ -5,7 +5,7 @@ import cloud.fogbow.common.constants.HttpMethod;
 import cloud.fogbow.common.exceptions.ConfigurationErrorException;
 import cloud.fogbow.common.exceptions.FogbowException;
 import cloud.fogbow.common.exceptions.UnavailableProviderException;
-import cloud.fogbow.common.exceptions.UnexpectedException;
+import cloud.fogbow.common.exceptions.InternalServerErrorException;
 import cloud.fogbow.common.util.CryptoUtil;
 import cloud.fogbow.common.util.connectivity.HttpRequestClient;
 import cloud.fogbow.common.util.connectivity.HttpResponse;
@@ -60,7 +60,7 @@ public class AccountingPublicKeysHolder {
         HttpResponse response = HttpRequestClient.doGenericRequest(HttpMethod.GET, endpoint, new HashMap<>(), new HashMap<>());
         if (response.getHttpCode() > HttpStatus.SC_OK) {
             Throwable e = new HttpResponseException(response.getHttpCode(), response.getContent());
-            throw new UnavailableProviderException(e.getMessage(), e);
+            throw new UnavailableProviderException(e.getMessage());
         } else {
             try {
                 Gson gson = new Gson();
@@ -69,7 +69,7 @@ public class AccountingPublicKeysHolder {
                 String publicKeyString = jsonResponse.get("publicKey");
                 publicKey = CryptoUtil.getPublicKeyFromString(publicKeyString);
             } catch (GeneralSecurityException e) {
-                throw new UnexpectedException("Invalid URL ");
+                throw new InternalServerErrorException("Invalid URL ");
             }
             return publicKey;
         }
