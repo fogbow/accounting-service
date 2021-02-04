@@ -4,6 +4,7 @@ import cloud.fogbow.accs.core.ApplicationFacade;
 import cloud.fogbow.accs.core.plugins.AccountingAuthPlugin;
 import cloud.fogbow.accs.core.processors.SyncProcessor;
 import cloud.fogbow.accs.core.PropertiesHolder;
+import cloud.fogbow.accs.core.datastore.DatabaseManager;
 import cloud.fogbow.common.constants.FogbowConstants;
 import cloud.fogbow.common.exceptions.FatalErrorException;
 import cloud.fogbow.common.plugins.authorization.AuthorizationPlugin;
@@ -23,9 +24,14 @@ public class Main implements ApplicationRunner   {
     @Autowired
     SyncProcessor syncProcess;
 
+    @Autowired
+    private DatabaseManager dbManager;
+    
     @Override
     public void run(ApplicationArguments args) {
         try {
+        	ApplicationFacade.getInstance().setDatabaseManager(dbManager);
+        	
             String publicKeyFilePath = PropertiesHolder.getInstance().getProperty(FogbowConstants.PUBLIC_KEY_FILE_PATH);
             String privateKeyFilePath = PropertiesHolder.getInstance().getProperty(FogbowConstants.PRIVATE_KEY_FILE_PATH);
             ServiceAsymmetricKeysHolder.getInstance().setPublicKeyFilePath(publicKeyFilePath);

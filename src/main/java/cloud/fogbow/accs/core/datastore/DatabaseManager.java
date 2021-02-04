@@ -4,8 +4,6 @@ import cloud.fogbow.accs.constants.SystemConstants;
 import cloud.fogbow.accs.core.datastore.orderstorage.*;
 import cloud.fogbow.accs.core.datastore.services.RecordService;
 import cloud.fogbow.accs.core.models.AccountingUser;
-import cloud.fogbow.accs.core.datastore.orderstorage.AuditableOrderIdRecorder;
-import cloud.fogbow.accs.core.datastore.orderstorage.AuditableOrderStateChange;
 import cloud.fogbow.accs.core.models.Record;
 import cloud.fogbow.accs.core.models.orders.Order;
 import cloud.fogbow.accs.core.models.orders.OrderState;
@@ -15,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class DatabaseManager {
@@ -71,13 +70,17 @@ public class DatabaseManager {
     }
 
     public AuditableOrderIdRecorder getIdRecorder() {
-        AuditableOrderIdRecorder idRecorder = auditableOrderIdRecorderRepository.findById(SystemConstants.ID_RECORDER_KEY);
-
-        if (idRecorder == null) {
+        Optional<AuditableOrderIdRecorder> idRecorderOptional = 
+        		auditableOrderIdRecorderRepository.findById(SystemConstants.ID_RECORDER_KEY);
+    	AuditableOrderIdRecorder idRecorder;
+        
+        if (!idRecorderOptional.isPresent()) {
             idRecorder = new AuditableOrderIdRecorder();
             idRecorder.setId(SystemConstants.ID_RECORDER_KEY);
             idRecorder.setCurrentId((0L));
             auditableOrderIdRecorderRepository.save(idRecorder);
+        } else {
+        	idRecorder = idRecorderOptional.get();
         }
 
         return idRecorder;
@@ -88,7 +91,7 @@ public class DatabaseManager {
     }
 
     public Order getOrder(String orderId) {
-        return orderRepository.findById(orderId);
+    	return orderRepository.findById(orderId).orElse(null);
     }
 
     public void saveUser(AccountingUser user) {

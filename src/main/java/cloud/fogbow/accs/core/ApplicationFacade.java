@@ -30,7 +30,8 @@ public class ApplicationFacade {
     private static ApplicationFacade instance;
     private AuthorizationPlugin authorizationPlugin;
     private String buildNumber;
-
+    private DatabaseManager dbManager;
+    
     public static synchronized ApplicationFacade getInstance() {
         if (instance == null) {
             instance = new ApplicationFacade();
@@ -38,14 +39,18 @@ public class ApplicationFacade {
         return instance;
     }
 
+    public void setDatabaseManager(DatabaseManager dbManager) {
+    	this.dbManager = dbManager;
+    }
+    
     public List<Record> getSelfRecords(String requestingMember, String resourceType, String intervalStart,
                                        String intervalEnd, String systemUserToken) throws FogbowException, ParseException {
         SystemUser requester = handleAuthIssues(systemUserToken, AccountingOperationType.OWN_BILLING);
 
         List<Record> records = new ArrayList<>();
-        List<cloud.fogbow.accs.core.models.Record> dbRecords = DatabaseManager.getInstance().getSelfRecords(
+        List<cloud.fogbow.accs.core.models.Record> dbRecords = dbManager.getSelfRecords(
                 requestingMember, resourceType, intervalStart, intervalEnd, requester);
-
+        
         for (cloud.fogbow.accs.core.models.Record record : dbRecords) {
             records.add(this.mountResponseRecord(record));
         }
@@ -58,7 +63,7 @@ public class ApplicationFacade {
         handleAuthIssues(systemUserToken, AccountingOperationType.OTHERS_BILLING);
 
         List<Record> records = new ArrayList<>();
-        List<cloud.fogbow.accs.core.models.Record> dbRecords = DatabaseManager.getInstance().getUserRecords(
+        List<cloud.fogbow.accs.core.models.Record> dbRecords = dbManager.getUserRecords(
                 userId, requestingMember, providingMember, resourceType, intervalStart, intervalEnd);
 
         for (cloud.fogbow.accs.core.models.Record record : dbRecords) {
@@ -92,7 +97,7 @@ public class ApplicationFacade {
         SystemUser requester = AuthenticationUtil.authenticate(
                 AccountingPublicKeysHolder.getInstance().getAsPublicKey(), systemUserToken);
 
-        AccountingOperation operation = new AccountingOperation(operationType, requester.getName());
+        AccountingOperation operation = new AccountingOperation(operationType, requester.getId());
 
         checkAuthorization(requester, operation);
 
