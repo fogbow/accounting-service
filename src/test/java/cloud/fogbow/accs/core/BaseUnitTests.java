@@ -17,7 +17,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 @Ignore
 // to avoid classLoader conflict
-@PowerMockIgnore({"javax.management.*"})
+@PowerMockIgnore({"javax.management.*", "jdk.internal.reflect.*"})
 @PrepareForTest({RecordRepository.class, RecordService.class, AuthenticationUtil.class, AccountingPublicKeysHolder.class, DatabaseManager.class})
 @RunWith(PowerMockRunner.class)
 @PowerMockRunnerDelegate(SpringRunner.class)

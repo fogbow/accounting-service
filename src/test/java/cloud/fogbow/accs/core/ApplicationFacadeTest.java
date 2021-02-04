@@ -74,6 +74,7 @@ public class ApplicationFacadeTest extends BaseUnitTests{
     public void testGetUserRecords() throws Exception {
         //setup
         DatabaseManager dbManager = testUtils.mockDbManager();
+        applicationFacade.setDatabaseManager(dbManager);
         Mockito.when(plugin.isAuthorized(Mockito.any(SystemUser.class), Mockito.any(AccountingOperation.class))).thenReturn(true);
         Mockito.when(dbManager.getUserRecords(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
             .thenReturn(getFakeRecordsCollection());
@@ -92,6 +93,7 @@ public class ApplicationFacadeTest extends BaseUnitTests{
     public void testGetSelfRecords() throws FogbowException, ParseException {
         //setup
         DatabaseManager dbManager = testUtils.mockDbManager();
+        applicationFacade.setDatabaseManager(dbManager);
         Mockito.when(plugin.isAuthorized(Mockito.any(SystemUser.class), Mockito.any(AccountingOperation.class))).thenReturn(true);
         Mockito.when(dbManager.getSelfRecords(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.any(SystemUser.class)))
                 .thenReturn(getFakeRecordsCollection());
