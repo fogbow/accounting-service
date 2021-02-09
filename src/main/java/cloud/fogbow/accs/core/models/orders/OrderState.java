@@ -9,6 +9,14 @@ public enum OrderState {
     FAILED_ON_REQUEST("FAILED_ON_REQUEST"),
     CLOSED("CLOSED"),
     UNABLE_TO_CHECK_STATUS("UNABLE_TO_CHECK_STATUS"),
+    SELECTED("SELECTED"),
+    ASSIGNED_FOR_DELETION("ASSIGNED_FOR_DELETION"),
+    CHECKING_DELETION("CHECKING_DELETION"),
+    PAUSED("PAUSED"),
+    HIBERNATED("HIBERNATED"),
+    PAUSING("PAUSING"),
+    HIBERNATING("HIBERNATING"),
+    RESUMING("RESUMING"),    
     DEACTIVATED("DEACTIVATED");
     // an order that has been closed is stored twice in stable storage:
     // one when the order is deleted (but instanceId != null),
