@@ -2,9 +2,9 @@ package cloud.fogbow.accs.core.processors;
 
 import cloud.fogbow.accs.core.BaseUnitTests;
 import cloud.fogbow.accs.core.datastore.DatabaseManager;
-import cloud.fogbow.accs.core.datastore.orderstorage.AuditableOrderIdRecorder;
-import cloud.fogbow.accs.core.datastore.orderstorage.AuditableOrderStateChange;
+import cloud.fogbow.accs.core.models.AuditableOrderIdRecorder;
 import cloud.fogbow.accs.core.models.Record;
+import cloud.fogbow.accs.core.models.orders.AuditableOrderStateChange;
 import cloud.fogbow.accs.core.models.orders.Order;
 import cloud.fogbow.accs.core.models.orders.OrderState;
 import org.junit.Assert;

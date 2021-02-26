@@ -1,7 +1,7 @@
 package cloud.fogbow.accs.core;
 
 import cloud.fogbow.accs.constants.Messages;
-import cloud.fogbow.accs.core.datastore.orderstorage.OrderSpecRepository;
+import cloud.fogbow.accs.core.datastore.accountingstorage.OrderSpecRepository;
 import cloud.fogbow.accs.core.exceptions.TypeNotAllowedException;
 import cloud.fogbow.accs.core.models.ResourceType;
 import cloud.fogbow.accs.core.models.orders.ComputeOrder;
