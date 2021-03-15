@@ -1,9 +1,7 @@
-package cloud.fogbow.accs.core.datastore.orderstorage;
+package cloud.fogbow.accs.core.models.orders;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
-import cloud.fogbow.accs.core.models.orders.Order;
-import cloud.fogbow.accs.core.models.orders.OrderState;
 
 @Entity
 @Table(name = "state_change_event")

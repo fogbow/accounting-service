@@ -1,4 +1,4 @@
-package cloud.fogbow.accs.core.datastore.orderstorage;
+package cloud.fogbow.accs.core.models;
 
 import javax.persistence.*;
 
@@ -7,6 +7,7 @@ import javax.persistence.*;
 public class AuditableOrderIdRecorder {
 
     @Id
+    @Column
     private String id;
 
     @Column

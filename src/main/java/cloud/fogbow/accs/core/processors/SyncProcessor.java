@@ -2,9 +2,8 @@ package cloud.fogbow.accs.core.processors;
 
 import cloud.fogbow.accs.constants.Messages;
 import cloud.fogbow.accs.core.datastore.DatabaseManager;
-import cloud.fogbow.accs.core.datastore.orderstorage.AuditableOrderIdRecorder;
-import cloud.fogbow.accs.core.datastore.orderstorage.AuditableOrderStateChange;
 import cloud.fogbow.accs.core.models.*;
+import cloud.fogbow.accs.core.models.orders.AuditableOrderStateChange;
 import cloud.fogbow.accs.core.models.orders.Order;
 import cloud.fogbow.accs.core.models.orders.OrderState;
 import cloud.fogbow.accs.core.SpecFactory;

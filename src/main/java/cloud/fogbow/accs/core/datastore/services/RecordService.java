@@ -1,7 +1,7 @@
 package cloud.fogbow.accs.core.datastore.services;
 
 import cloud.fogbow.accs.constants.Messages;
-import cloud.fogbow.accs.core.datastore.orderstorage.RecordRepository;
+import cloud.fogbow.accs.core.datastore.accountingstorage.RecordRepository;
 import cloud.fogbow.accs.core.exceptions.InvalidIntervalException;
 import cloud.fogbow.accs.core.models.*;
 import cloud.fogbow.accs.core.models.orders.OrderState;

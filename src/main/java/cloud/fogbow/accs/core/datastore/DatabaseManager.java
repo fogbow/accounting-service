@@ -1,10 +1,15 @@
 package cloud.fogbow.accs.core.datastore;
 
 import cloud.fogbow.accs.constants.SystemConstants;
+import cloud.fogbow.accs.core.datastore.accountingstorage.AuditableOrderIdRecorderRepository;
+import cloud.fogbow.accs.core.datastore.accountingstorage.RecordRepository;
+import cloud.fogbow.accs.core.datastore.accountingstorage.UserRepository;
 import cloud.fogbow.accs.core.datastore.orderstorage.*;
 import cloud.fogbow.accs.core.datastore.services.RecordService;
 import cloud.fogbow.accs.core.models.AccountingUser;
+import cloud.fogbow.accs.core.models.AuditableOrderIdRecorder;
 import cloud.fogbow.accs.core.models.Record;
+import cloud.fogbow.accs.core.models.orders.AuditableOrderStateChange;
 import cloud.fogbow.accs.core.models.orders.Order;
 import cloud.fogbow.accs.core.models.orders.OrderState;
 import cloud.fogbow.common.models.SystemUser;
@@ -36,9 +41,6 @@ public class DatabaseManager {
     private RecordService recordService;
 
     private static DatabaseManager instance;
-
-    private DatabaseManager() {
-    }
 
     public static synchronized DatabaseManager getInstance() {
         if (instance == null) {

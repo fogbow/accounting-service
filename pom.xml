@@ -89,10 +89,33 @@
 	</dependencies>
 
 	<build>
+	    <resources>
+            <resource>
+                <directory>src/main/resources/</directory>
+                <excludes>
+                    <exclude>examples/</exclude>
+                </excludes>
+            </resource>
+        </resources>
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+            </testResource>
+        </testResources>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                        <configuration>
+                            <classifier>exec</classifier>
+                        </configuration>
+                    </execution>
+                </executions>
 			</plugin>
 		</plugins>
 	</build>
