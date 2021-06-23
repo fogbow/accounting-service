@@ -64,6 +64,39 @@ public class RecordService {
 
         return records;
     }
+    
+    public List<Record> getAllResourcesUserRecords(String userId, String requestingMember, String providingMember,
+            String intervalStart, String intervalEnd) throws ParseException {
+        Timestamp start = getTimestampFromString(intervalStart);
+        Timestamp end = getTimestampFromString(intervalEnd);
+
+        checkInterval(start, end);
+
+        AccountingUser user = new AccountingUser(new UserIdentity(providingMember, userId));
+
+        List<Record> closedRecords = this.getClosedRecords(user, requestingMember, start, end);
+        List<Record> openedRecords = this.getOpenedRecords(user, requestingMember, start, end);
+
+        setOpenedRecordsDuration(openedRecords);
+
+        openedRecords.addAll(closedRecords);
+        List<Record> records = openedRecords;
+
+        return records;
+    }
+
+    protected List<Record> getOpenedRecords(AccountingUser user, String requestingMember, Timestamp startTime, Timestamp endTime) {
+        return recordRepository.findByUserAndRequestingMemberAndStartDateLessThanEqualAndStartDateGreaterThanEqualAndStateEquals(
+                user, requestingMember, endTime, startTime, OrderState.FULFILLED
+        );
+    }
+
+    protected List<Record> getClosedRecords(AccountingUser user, String requestingMember, Timestamp beginTime, 
+            Timestamp endTime) {
+        return recordRepository.findByUserAndRequestingMemberAndStartDateLessThanEqualAndEndDateGreaterThanEqual(
+                user, requestingMember, endTime, beginTime
+        );
+    }
 
     protected List<Record> getClosedRecords(AccountingUser user, String requestingMember, String resourceType, Timestamp beginTime, Timestamp endTime) {
         return recordRepository.findByUserAndRequestingMemberAndResourceTypeAndStartDateLessThanEqualAndEndDateGreaterThanEqual(

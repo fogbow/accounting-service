@@ -71,6 +71,11 @@ public class DatabaseManager {
         return recordService.getUserRecords(userId, requestingMember, providingMember, resourceType, intervalStart, intervalEnd);
     }
 
+    public List<Record> getUserRecords(String userId, String requestingMember, String providingMember,
+            String intervalStart, String intervalEnd) throws ParseException {
+        return recordService.getAllResourcesUserRecords(userId, requestingMember, providingMember, intervalStart, intervalEnd);
+    }
+    
     public AuditableOrderIdRecorder getIdRecorder() {
         Optional<AuditableOrderIdRecorder> idRecorderOptional = 
         		auditableOrderIdRecorderRepository.findById(SystemConstants.ID_RECORDER_KEY);

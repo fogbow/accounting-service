@@ -24,4 +24,9 @@ public interface RecordRepository extends JpaRepository<Record, String> {
     public List<Record> findByUserAndRequestingMemberAndResourceTypeAndStartDateLessThanEqualAndStartDateGreaterThanEqualAndStateEquals(
             AccountingUser user, String requestingMember, String resourceType, Timestamp endTime, Timestamp startTime, OrderState state);
 
+    public List<Record> findByUserAndRequestingMemberAndStartDateLessThanEqualAndStartDateGreaterThanEqualAndStateEquals(
+            AccountingUser user, String requestingMember, Timestamp endTime, Timestamp startTime, OrderState fulfilled);
+
+    public List<Record> findByUserAndRequestingMemberAndStartDateLessThanEqualAndEndDateGreaterThanEqual(
+            AccountingUser user, String requestingMember, Timestamp endTime, Timestamp beginTime);
 }

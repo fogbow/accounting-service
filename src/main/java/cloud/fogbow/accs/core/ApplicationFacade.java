@@ -73,6 +73,21 @@ public class ApplicationFacade {
         return records;
     }
 
+    public List<Record> getAllResourcesUserRecords(String userId, String requestingMember, String providingMember,
+            String intervalStart, String intervalEnd, String systemUserToken) throws Exception {
+        handleAuthIssues(systemUserToken, AccountingOperationType.OTHERS_BILLING);
+        
+        List<Record> records = new ArrayList<>();
+        List<cloud.fogbow.accs.core.models.Record> dbRecords = dbManager.getUserRecords(
+                userId, requestingMember, providingMember, intervalStart, intervalEnd);
+
+        for (cloud.fogbow.accs.core.models.Record record : dbRecords) {
+            records.add(this.mountResponseRecord(record));
+        }
+
+        return records;
+    }
+
     public String getPublicKey() throws InternalServerErrorException {
         // There is no need to authenticate the user or authorize this operation
         try {

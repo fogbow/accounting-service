@@ -156,6 +156,22 @@ public class RecordServiceTest extends BaseUnitTests {
         Mockito.verify(recordService, Mockito.times(1)).checkInterval(Mockito.any(Timestamp.class), Mockito.any(Timestamp.class));
         Mockito.verify(recordService, Mockito.times(1)).setOpenedRecordsDuration(Mockito.any(List.class));
     }
+    
+    @Test
+    public void testGetAllResourcesUserRecords() throws ParseException {
+        //setup
+        AccountingUser user = new AccountingUser(new UserIdentity(  ANY_VALUE, ANY_VALUE));
+        mockDatabaseOperations(testUtils.RECORDS_BY_USER, null, testUtils.OTHER_USER, user, DEFAULT_RECORDS_SIZE);
+
+        //exercise
+        recordService.getAllResourcesUserRecords(ANY_VALUE, ANY_VALUE, ANY_VALUE, TEST_DATE, TEST_DATE);
+
+        //verify
+        Mockito.verify(recordService, Mockito.times(1)).getOpenedRecords(Mockito.any(AccountingUser.class), Mockito.anyString(), Mockito.any(Timestamp.class), Mockito.any(Timestamp.class));
+        Mockito.verify(recordService, Mockito.times(1)).getClosedRecords(Mockito.any(AccountingUser.class), Mockito.anyString(), Mockito.any(Timestamp.class), Mockito.any(Timestamp.class));
+        Mockito.verify(recordService, Mockito.times(1)).checkInterval(Mockito.any(Timestamp.class), Mockito.any(Timestamp.class));
+        Mockito.verify(recordService, Mockito.times(1)).setOpenedRecordsDuration(Mockito.any(List.class));
+    }
 
     private void mockDatabaseOperations(String operation, OrderState state, String userType, AccountingUser user, int size) {
         switch (operation) {
