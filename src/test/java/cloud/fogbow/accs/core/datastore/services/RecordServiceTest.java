@@ -26,6 +26,7 @@ public class RecordServiceTest extends BaseUnitTests {
 
     private final String ANY_VALUE = "any";
     private final String TEST_DATE = "2000-01-01";
+    private final String COMPLETE_TEST_DATE = "2000-01-01_10:02:59";
     private final String DEFAULT_RESOURCE_TYPE = "compute";
     private final String FAKE_REQ_MEMBER = "mockedRequestingMember";
     private final int DEFAULT_RECORDS_SIZE = 2;
@@ -89,6 +90,16 @@ public class RecordServiceTest extends BaseUnitTests {
 
         //exercise/verify
         Assert.assertEquals(twoThousandTimestamp, recordService.getTimestampFromString(TEST_DATE));
+    }
+    
+    //test case: check if the timestamp returned is the expected one.
+    @Test
+    public void testGetTimestampFromStringCompleteDateFormat() throws ParseException{
+        //setup
+        Timestamp twoThousandTimestamp = Timestamp.valueOf("2000-01-01 10:02:59");
+
+        //exercise/verify
+        Assert.assertEquals(twoThousandTimestamp, recordService.getTimestampFromString(COMPLETE_TEST_DATE));
     }
 
     //test case: just exercise the method by checking if it returned what it should return

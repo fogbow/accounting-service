@@ -1,6 +1,7 @@
 package cloud.fogbow.accs.core.processors;
 
 import cloud.fogbow.accs.constants.Messages;
+import cloud.fogbow.accs.constants.SystemConstants;
 import cloud.fogbow.accs.core.datastore.DatabaseManager;
 import cloud.fogbow.accs.core.models.*;
 import cloud.fogbow.accs.core.models.orders.AuditableOrderStateChange;
@@ -24,7 +25,6 @@ import java.util.List;
 public class SyncProcessor implements Runnable {
 	private static final int SLEEP_TIME = 60000; // One minute
 	private static final Logger LOGGER = LoggerFactory.getLogger(SyncProcessor.class);
-	private final String DATE_FORMAT = "yyyy-MM-dd";
 
 	private AuditableOrderIdRecorder idRecorder;
 
@@ -166,7 +166,7 @@ public class SyncProcessor implements Runnable {
 
 	protected Timestamp extractDateFromTimestamp(Timestamp timestamp) {
 		try {
-			DateFormat f = new SimpleDateFormat(DATE_FORMAT);
+			DateFormat f = new SimpleDateFormat(SystemConstants.COMPLETE_DATE_FORMAT);
 			Date d = f.parse(f.format((Date) timestamp));
 			return new Timestamp(d.getTime());
 		} catch (ParseException pe) {

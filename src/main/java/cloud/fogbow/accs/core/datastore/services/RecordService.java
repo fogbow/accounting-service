@@ -1,6 +1,7 @@
 package cloud.fogbow.accs.core.datastore.services;
 
 import cloud.fogbow.accs.constants.Messages;
+import cloud.fogbow.accs.constants.SystemConstants;
 import cloud.fogbow.accs.core.datastore.accountingstorage.RecordRepository;
 import cloud.fogbow.accs.core.exceptions.InvalidIntervalException;
 import cloud.fogbow.accs.core.models.*;
@@ -20,8 +21,6 @@ public class RecordService {
 
     @Autowired
     private RecordRepository recordRepository;
-
-    private static final String SIMPLE_DATE_FORMAT = "yyyy-MM-dd";
 
     public RecordService() {}
 
@@ -111,7 +110,14 @@ public class RecordService {
     }
 
     protected Timestamp getTimestampFromString(String date) throws ParseException{
-        Date dateRepresentation = new SimpleDateFormat(SIMPLE_DATE_FORMAT).parse(date);
+        Date dateRepresentation = null;
+        
+        try {
+            dateRepresentation = new SimpleDateFormat(SystemConstants.COMPLETE_DATE_FORMAT).parse(date);
+        } catch (ParseException e) {
+            dateRepresentation = new SimpleDateFormat(SystemConstants.SIMPLE_DATE_FORMAT).parse(date);
+        }
+        
         return new Timestamp(dateRepresentation.getTime());
     }
 
