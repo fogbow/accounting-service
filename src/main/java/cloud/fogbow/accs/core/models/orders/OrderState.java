@@ -17,6 +17,8 @@ public enum OrderState {
     PAUSING("PAUSING"),
     HIBERNATING("HIBERNATING"),
     RESUMING("RESUMING"),    
+    STOPPED("STOPPED"),
+    STOPPING("STOPPING"),
     DEACTIVATED("DEACTIVATED");
     // an order that has been closed is stored twice in stable storage:
     // one when the order is deleted (but instanceId != null),
