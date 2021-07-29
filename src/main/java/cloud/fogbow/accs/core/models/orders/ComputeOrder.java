@@ -25,7 +25,7 @@ public class ComputeOrder extends Order {
 
     // Memory attribute, must be set in MB.
     @Column
-    private int memory;
+    private int ram;
 
     // Disk attribute, must be set in GB.
     @Column
@@ -60,8 +60,8 @@ public class ComputeOrder extends Order {
         return vCPU;
     }
 
-    public int getMemory() {
-        return memory;
+    public int getRam() {
+        return ram;
     }
 
     public int getDisk() {

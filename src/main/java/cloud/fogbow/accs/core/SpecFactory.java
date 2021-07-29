@@ -27,7 +27,7 @@ public class SpecFactory {
         ResourceType resourceType = order.getType();
         switch (resourceType) {
             case COMPUTE:
-                spec = new ComputeSpec(((ComputeOrder) order).getvCPU(), ((ComputeOrder) order).getMemory());
+                spec = new ComputeSpec(((ComputeOrder) order).getvCPU(), ((ComputeOrder) order).getRam());
                 break;
             case NETWORK:
                 spec = new NetworkSpec(((NetworkOrder) order).getCidr(), ((NetworkOrder) order).getAllocationMode());
