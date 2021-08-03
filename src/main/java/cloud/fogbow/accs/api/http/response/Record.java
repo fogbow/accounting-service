@@ -10,7 +10,7 @@ import java.sql.Timestamp;
 import java.util.Objects;
 
 @ApiModel
-public class Record {
+public abstract class Record {
 
 	@ApiModelProperty(position = 0, example = ApiDocumentation.Record.RECORD_ID)
 	private Long id;
@@ -20,9 +20,6 @@ public class Record {
 	
 	@ApiModelProperty(position = 2, example = ApiDocumentation.Record.RESOURCE_TYPE)
 	private String resourceType;
-	
-	@ApiModelProperty
-	private OrderSpec spec;
 	
 	@ApiModelProperty(position = 4, example = ApiDocumentation.Record.REQUESTER)
 	private String requester;
@@ -69,13 +66,8 @@ public class Record {
 		this.resourceType = resourceType;
 	}
 
-	public OrderSpec getSpec() {
-		return spec;
-	}
-
-	public void setSpec(OrderSpec spec) {
-		this.spec = spec;
-	}
+	public abstract OrderSpec getSpec();
+	public abstract void setSpec(OrderSpec spec);
 
 	public void setEndTime(Timestamp endTime) {
 		this.endTime = endTime;
@@ -142,22 +134,21 @@ public class Record {
 				id.equals(record.id) &&
 				Objects.equals(orderId, record.orderId) &&
 				Objects.equals(resourceType, record.resourceType) &&
-				Objects.equals(spec, record.spec) &&
 				Objects.equals(requester, record.requester) &&
 				Objects.equals(startTime, record.startTime);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, orderId, resourceType, spec, requester, startTime, duration);
+		return Objects.hash(id, orderId, resourceType, requester, startTime, duration);
 	}
 
-	public Record(Long id, String orderId, String resourceType, OrderSpec spec, String requester, Timestamp startTime,
+	public Record(Long id, String orderId, String resourceType,
+			String requester, Timestamp startTime,
 				  Timestamp startDate, Timestamp endTime, Timestamp endDate, long duration, OrderState state) {
 		this.id = id;
 		this.orderId = orderId;
 		this.resourceType = resourceType;
-		this.spec = spec;
 		this.requester = requester;
 		this.startTime = startTime;
 		this.startDate = startDate;

@@ -1,6 +1,7 @@
 package cloud.fogbow.accs.core;
 
 import cloud.fogbow.accs.api.http.response.Record;
+import cloud.fogbow.accs.api.http.response.AccsApiUtils;
 import cloud.fogbow.accs.constants.Messages;
 import cloud.fogbow.accs.core.datastore.DatabaseManager;
 import cloud.fogbow.accs.core.models.AccountingOperation;
@@ -12,6 +13,7 @@ import cloud.fogbow.as.core.util.AuthenticationUtil;
 import cloud.fogbow.common.exceptions.FogbowException;
 import cloud.fogbow.common.exceptions.UnauthorizedRequestException;
 import cloud.fogbow.common.exceptions.InternalServerErrorException;
+import cloud.fogbow.common.exceptions.InvalidParameterException;
 import cloud.fogbow.common.models.SystemUser;
 import cloud.fogbow.common.plugins.authorization.AuthorizationPlugin;
 import cloud.fogbow.common.util.CryptoUtil;
@@ -101,11 +103,8 @@ public class ApplicationFacade {
         this.authorizationPlugin = authorizationPlugin;
     }
 
-    protected Record mountResponseRecord(cloud.fogbow.accs.core.models.Record dbRecord) {
-        return (new Record(dbRecord.getId(), dbRecord.getOrderId(), dbRecord.getResourceType(), dbRecord.getSpec(),
-                           dbRecord.getRequestingMember(), dbRecord.getStartTime(), dbRecord.getStartDate(),
-                           dbRecord.getEndTime(), dbRecord.getEndDate(), dbRecord.getDuration(), dbRecord.getState()));
-
+    protected Record mountResponseRecord(cloud.fogbow.accs.core.models.Record dbRecord) throws InvalidParameterException {
+        return new AccsApiUtils().mountResponseRecord(dbRecord);
     }
 
     protected SystemUser handleAuthIssues(String systemUserToken, AccountingOperationType operationType) throws FogbowException{
