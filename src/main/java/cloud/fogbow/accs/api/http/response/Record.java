@@ -1,5 +1,6 @@
 package cloud.fogbow.accs.api.http.response;
 
+import cloud.fogbow.accs.core.models.OrderStateHistory;
 import cloud.fogbow.accs.core.models.orders.OrderState;
 import cloud.fogbow.accs.core.models.specs.OrderSpec;
 import cloud.fogbow.accs.constants.ApiDocumentation;
@@ -21,6 +22,9 @@ public abstract class Record {
 	@ApiModelProperty(position = 2, example = ApiDocumentation.Record.RESOURCE_TYPE)
 	private String resourceType;
 	
+	// TODO update documentation
+	// The spec field was moved to the Record subclasses
+	
 	@ApiModelProperty(position = 4, example = ApiDocumentation.Record.REQUESTER)
 	private String requester;
 
@@ -41,6 +45,9 @@ public abstract class Record {
 
 	@ApiModelProperty(position = 10, example = ApiDocumentation.Record.STATE)
 	private OrderState state;
+	
+	// TODO update documentation
+	private OrderStateHistory stateHistory;
 
 	public Long getId() {
 		return id;
@@ -124,6 +131,14 @@ public abstract class Record {
 	public Timestamp getEndDate() {
 		return endDate;
 	}
+	
+	public OrderStateHistory getStateHistory() {
+		return stateHistory;
+	}
+
+	public void setStateHistory(OrderStateHistory stateHistory) {
+		this.stateHistory = stateHistory;
+	}
 
 	@Override
 	public boolean equals(Object o) {
@@ -145,7 +160,8 @@ public abstract class Record {
 
 	public Record(Long id, String orderId, String resourceType,
 			String requester, Timestamp startTime,
-				  Timestamp startDate, Timestamp endTime, Timestamp endDate, long duration, OrderState state) {
+				  Timestamp startDate, Timestamp endTime, Timestamp endDate, long duration, OrderState state,
+				  OrderStateHistory orderStateHistory) {
 		this.id = id;
 		this.orderId = orderId;
 		this.resourceType = resourceType;
@@ -156,6 +172,7 @@ public abstract class Record {
 		this.endTime = endTime;
 		this.duration = duration;
 		this.state = state;
+		this.stateHistory = orderStateHistory;
 	}
 
 	public Record() {}

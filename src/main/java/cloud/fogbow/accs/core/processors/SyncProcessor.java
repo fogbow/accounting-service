@@ -81,21 +81,19 @@ public class SyncProcessor implements Runnable {
 			createRecord(auditOrder);
 		} else {
 			if (orderHasFinished(auditOrder.getNewState())) {
-				rec.setState(auditOrder.getNewState());
 				rec.setEndTime(auditOrder.getTimestamp());
 				rec.setEndDate(extractDateFromTimestamp(auditOrder.getTimestamp()));
 				setClosedOrderDuration(auditOrder, rec);
 			} else if (auditOrder.getNewState().equals(OrderState.UNABLE_TO_CHECK_STATUS)) {
 				rec.setDuration(getDuration(auditOrder.getTimestamp(), rec.getStartTime()));
-				rec.setState(auditOrder.getNewState());
 			} else if (auditOrder.getNewState().equals(OrderState.FULFILLED)) {
-				rec.setState(auditOrder.getNewState());
 				rec.setDuration(0);
 				if (rec.getStartTime() == null) {
 					rec.setStartTime(auditOrder.getTimestamp());
 				}
-
 			}
+			
+			rec.updateState(auditOrder.getNewState(), auditOrder.getTimestamp());
 			dbManager.saveRecord(rec);
 		}
 	}
@@ -119,7 +117,7 @@ public class SyncProcessor implements Runnable {
 
 		setTimeAttributes(ord, auditOrder, rec);
 
-		rec.setState(auditOrder.getNewState());
+		rec.updateState(auditOrder.getNewState(), auditOrder.getTimestamp());
 
 		dbManager.saveUser(user);
 		dbManager.saveRecord(rec);

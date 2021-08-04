@@ -2,6 +2,7 @@ package cloud.fogbow.accs.core;
 
 import cloud.fogbow.accs.core.datastore.DatabaseManager;
 import cloud.fogbow.accs.core.models.AccountingUser;
+import cloud.fogbow.accs.core.models.OrderStateHistory;
 import cloud.fogbow.accs.core.models.Record;
 import cloud.fogbow.accs.core.models.UserIdentity;
 import cloud.fogbow.accs.core.models.orders.AuditableOrderStateChange;
@@ -52,8 +53,9 @@ public class TestUtils {
 
         for (int i = 0; i < size; i++) {
             Record rec = new Record();
-            rec.setState(OrderState.CLOSED);
+            rec.setStateHistory(new OrderStateHistory());
             rec.setStartTime(new Timestamp(new Date().getTime()));
+            rec.updateState(OrderState.CLOSED, new Timestamp(new Date().getTime()));
             records.add(rec);
         }
 
@@ -63,10 +65,27 @@ public class TestUtils {
     public List<Record> createOpenedRecords(int size) {
         List<Record> records = new ArrayList<>();
 
+        System.out.println(size);
         for (int i = 0; i < size; i++) {
             Record rec = new Record();
-            rec.setState(OrderState.FULFILLED);
+            rec.setStateHistory(new OrderStateHistory());
             rec.setStartTime(new Timestamp(new Date().getTime()));
+            rec.updateState(OrderState.FULFILLED, new Timestamp(new Date().getTime()));
+            records.add(rec);
+        }
+
+        return records;
+    }
+    
+    public List<Record> createRecordsWithState(int size, OrderState state) {
+        List<Record> records = new ArrayList<>();
+
+        System.out.println(size);
+        for (int i = 0; i < size; i++) {
+            Record rec = new Record();
+            rec.setStateHistory(new OrderStateHistory());
+            rec.setStartTime(new Timestamp(new Date().getTime()));
+            rec.updateState(state, new Timestamp(new Date().getTime()));
             records.add(rec);
         }
 
@@ -80,6 +99,7 @@ public class TestUtils {
 
         for(int i = 0; i < size; i++) {
             Record rec = new Record();
+            rec.setStateHistory(new OrderStateHistory());
             rec.setUser(selfUser);
             rec.setStartTime(new Timestamp(new Date().getTime()));
             records.add(rec);
@@ -93,6 +113,7 @@ public class TestUtils {
 
         for(int i = 0; i < size; i++) {
             Record rec = new Record();
+            rec.setStateHistory(new OrderStateHistory());
             rec.setUser(user);
             rec.setStartTime(new Timestamp(new Date().getTime()));
             records.add(rec);
@@ -138,6 +159,7 @@ public class TestUtils {
     public Record createRecord(String orderId) {
         Record record = new Record();
         record.setOrderId(orderId);
+        record.setStateHistory(Mockito.mock(OrderStateHistory.class));
         Timestamp startTime = new Timestamp(System.currentTimeMillis());
         Timestamp endTime = new Timestamp(System.currentTimeMillis() + TEN_SECONDS);
         record.setStartTime(startTime);
@@ -148,6 +170,7 @@ public class TestUtils {
     public Record createSimplestRecord(String orderId) {
         Record record = new Record();
         record.setOrderId(orderId);
+        record.setStateHistory(Mockito.mock(OrderStateHistory.class));
         return record;
     }
 

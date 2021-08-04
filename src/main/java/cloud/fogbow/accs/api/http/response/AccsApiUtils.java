@@ -8,6 +8,7 @@ import com.google.gson.Gson;
 import com.google.gson.internal.LinkedTreeMap;
 
 import cloud.fogbow.accs.constants.Messages;
+import cloud.fogbow.accs.core.models.OrderStateHistory;
 import cloud.fogbow.accs.core.models.orders.OrderState;
 import cloud.fogbow.accs.core.models.specs.ComputeSpec;
 import cloud.fogbow.accs.core.models.specs.NetworkSpec;
@@ -77,8 +78,10 @@ public class AccsApiUtils {
 		private ComputeSpec spec;
 		
 		public ComputeRecord(Long id, String orderId, String resourceType, ComputeSpec spec, String requester, Timestamp startTime,
-				  Timestamp startDate, Timestamp endTime, Timestamp endDate, long duration, OrderState state) throws InvalidParameterException {
-			super(id, orderId, resourceType, requester, startTime, startDate, endTime, endDate, duration, state);
+				  Timestamp startDate, Timestamp endTime, Timestamp endDate, long duration, OrderState state, 
+				  OrderStateHistory stateHistory) throws InvalidParameterException {
+			super(id, orderId, resourceType, requester, startTime, startDate, endTime, endDate, 
+					duration, state, stateHistory);
 			this.spec = spec;
 		}
 		
@@ -97,15 +100,18 @@ public class AccsApiUtils {
             checkRecordPropertyIsNotNull("spec", getSpec());
             checkRecordPropertyIsNotNull("startTime", getStartTime());
             checkRecordPropertyIsNotNull("startDate", getStartDate());
+            checkRecordPropertyIsNotNull("stateHistory", getStateHistory());
         }
 	}
 	
 	public class VolumeRecord extends Record {
 		private VolumeSpec spec;
 		
-		public VolumeRecord(Long id, String orderId, String resourceType, VolumeSpec spec, String requester, Timestamp startTime,
-				  Timestamp startDate, Timestamp endTime, Timestamp endDate, long duration, OrderState state) {
-			super(id, orderId, resourceType, requester, startTime, startDate, endTime, endDate, duration, state);
+		public VolumeRecord(Long id, String orderId, String resourceType, VolumeSpec spec, String requester, 
+				Timestamp startTime, Timestamp startDate, Timestamp endTime, Timestamp endDate, long duration, 
+				OrderState state, OrderStateHistory stateHistory) {
+			super(id, orderId, resourceType, requester, startTime, startDate, endTime, endDate, duration, 
+					state, stateHistory);
 			this.spec = spec;
 		}
 		
@@ -124,6 +130,7 @@ public class AccsApiUtils {
             checkRecordPropertyIsNotNull("spec", getSpec());
             checkRecordPropertyIsNotNull("startTime", getStartTime());
             checkRecordPropertyIsNotNull("startDate", getStartDate());
+            checkRecordPropertyIsNotNull("stateHistory", getStateHistory());
         }
 	}
 	
@@ -132,8 +139,9 @@ public class AccsApiUtils {
 
         public NetworkRecord(Long id, String orderId, String resourceType, NetworkSpec spec, String requester,
                 Timestamp startTime, Timestamp startDate, Timestamp endTime, Timestamp endDate, long duration,
-                OrderState state) {
-            super(id, orderId, resourceType, requester, startTime, startDate, endTime, endDate, duration, state);
+                OrderState state, OrderStateHistory stateHistory) {
+            super(id, orderId, resourceType, requester, startTime, startDate, endTime, endDate, 
+            		duration, state, stateHistory);
             this.spec = spec;
         }
 
@@ -152,6 +160,7 @@ public class AccsApiUtils {
             checkRecordPropertyIsNotNull("spec", getSpec());
             checkRecordPropertyIsNotNull("startTime", getStartTime());
             checkRecordPropertyIsNotNull("startDate", getStartDate());
+            checkRecordPropertyIsNotNull("stateHistory", getStateHistory());
         }
     }
     
@@ -169,15 +178,18 @@ public class AccsApiUtils {
     	if (spec instanceof ComputeSpec) {
     		return new ComputeRecord(dbRecord.getId(), dbRecord.getOrderId(), dbRecord.getResourceType(), (ComputeSpec) dbRecord.getSpec(),
                     dbRecord.getRequestingMember(), dbRecord.getStartTime(), dbRecord.getStartDate(),
-                    dbRecord.getEndTime(), dbRecord.getEndDate(), dbRecord.getDuration(), dbRecord.getState());
+                    dbRecord.getEndTime(), dbRecord.getEndDate(), dbRecord.getDuration(), dbRecord.getState(), 
+                    dbRecord.getStateHistory());
     	} else if (spec instanceof VolumeSpec) {
     		return new VolumeRecord(dbRecord.getId(), dbRecord.getOrderId(), dbRecord.getResourceType(), (VolumeSpec) dbRecord.getSpec(),
                     dbRecord.getRequestingMember(), dbRecord.getStartTime(), dbRecord.getStartDate(),
-                    dbRecord.getEndTime(), dbRecord.getEndDate(), dbRecord.getDuration(), dbRecord.getState());
+                    dbRecord.getEndTime(), dbRecord.getEndDate(), dbRecord.getDuration(), dbRecord.getState(), 
+                    dbRecord.getStateHistory());
     	} else if (spec instanceof NetworkSpec) {
     		return new NetworkRecord(dbRecord.getId(), dbRecord.getOrderId(), dbRecord.getResourceType(), (NetworkSpec) dbRecord.getSpec(),
                     dbRecord.getRequestingMember(), dbRecord.getStartTime(), dbRecord.getStartDate(),
-                    dbRecord.getEndTime(), dbRecord.getEndDate(), dbRecord.getDuration(), dbRecord.getState());
+                    dbRecord.getEndTime(), dbRecord.getEndDate(), dbRecord.getDuration(), dbRecord.getState(), 
+                    dbRecord.getStateHistory());
     	} else {
     		// TODO error
     		return null;

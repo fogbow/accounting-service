@@ -13,12 +13,21 @@ import org.springframework.stereotype.Service;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 @Service
 public class RecordService {
 
+    // This list contains all the OrderStates that can be described as 'Opened'.
+    // If a Record is opened, then its state is contained in the list.
+    private static final List<OrderState> OPENED_RECORDS_STATES = Arrays.asList(OrderState.FULFILLED, 
+            OrderState.PAUSING, OrderState.PAUSED, 
+            OrderState.HIBERNATING, OrderState.HIBERNATED, OrderState.STOPPING, 
+            OrderState.STOPPED, OrderState.SPAWNING);
+    
     @Autowired
     private RecordRepository recordRepository;
 
@@ -85,9 +94,26 @@ public class RecordService {
     }
 
     protected List<Record> getOpenedRecords(AccountingUser user, String requestingMember, Timestamp startTime, Timestamp endTime) {
-        return recordRepository.findByUserAndRequestingMemberAndStartDateLessThanEqualAndStartDateGreaterThanEqualAndStateEquals(
-                user, requestingMember, endTime, startTime, OrderState.FULFILLED
-        );
+        List<Record> openedRecords = new ArrayList<Record>();
+
+        for (OrderState state : OPENED_RECORDS_STATES) {
+            openedRecords.addAll(this.getRecordsByState(user, requestingMember, 
+                    startTime, endTime, state));
+        }
+        
+        return openedRecords;
+    }
+    
+    protected List<Record> getOpenedRecords(AccountingUser user, String requestingMember, String resourceType, 
+            Timestamp startTime, Timestamp endTime) {
+        List<Record> openedRecords = new ArrayList<Record>(); 
+
+        for (OrderState state : OPENED_RECORDS_STATES) {
+            openedRecords.addAll(this.getRecordsByState(user, requestingMember, 
+                    resourceType, startTime, endTime, state));
+        }
+
+        return openedRecords;
     }
 
     protected List<Record> getClosedRecords(AccountingUser user, String requestingMember, Timestamp beginTime, 
@@ -103,12 +129,20 @@ public class RecordService {
         );
     }
 
-    protected List<Record> getOpenedRecords(AccountingUser user, String requestingMember, String resourceType, Timestamp startTime, Timestamp endTime) {
-        return recordRepository.findByUserAndRequestingMemberAndResourceTypeAndStartDateLessThanEqualAndStartDateGreaterThanEqualAndStateEquals(
-                user, requestingMember, resourceType, endTime, startTime, OrderState.FULFILLED
+    protected List<Record> getRecordsByState(AccountingUser user, String requestingMember,
+            Timestamp startTime, Timestamp endTime, OrderState state) {
+        return recordRepository.findByUserAndRequestingMemberAndStartDateLessThanEqualAndStartDateGreaterThanEqualAndStateEquals(
+                user, requestingMember, endTime, startTime, state
         );
     }
-
+    
+    protected List<Record> getRecordsByState(AccountingUser user, String requestingMember, String resourceType,
+            Timestamp startTime, Timestamp endTime, OrderState state) {
+        return recordRepository.findByUserAndRequestingMemberAndResourceTypeAndStartDateLessThanEqualAndStartDateGreaterThanEqualAndStateEquals(
+                user, requestingMember, resourceType, endTime, startTime, state
+        );
+    }
+    
     protected Timestamp getTimestampFromString(String date) throws ParseException{
         Date dateRepresentation = null;
         

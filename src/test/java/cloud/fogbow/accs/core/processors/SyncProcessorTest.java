@@ -179,7 +179,8 @@ public class SyncProcessorTest extends BaseUnitTests {
         //setup
         Order order = testUtils.createOrder(FAKE_ORDER_ID);
         AuditableOrderStateChange auditableOrderStateChange = testUtils.createAuditableOrderStateChange(order, OrderState.CLOSED);
-        auditableOrderStateChange.setTimestamp(testUtils.getNOW());
+        Timestamp changeTime = testUtils.getNOW();
+        auditableOrderStateChange.setTimestamp(changeTime);
         Record record = testUtils.createRecord(order.getId());
 
         Mockito.when(dbManager.getRecordByOrderId(Mockito.anyString())).thenReturn(record);
@@ -190,6 +191,7 @@ public class SyncProcessorTest extends BaseUnitTests {
         Assert.assertEquals(auditableOrderStateChange.getTimestamp(), record.getEndTime());
         Assert.assertEquals(syncProcessor.extractDateFromTimestamp(auditableOrderStateChange.getTimestamp()), record.getEndDate());
         Assert.assertEquals(syncProcessor.getDuration(record.getEndTime(), record.getStartTime()), record.getDuration());
+        Mockito.verify(record.getStateHistory()).updateState(OrderState.CLOSED, changeTime);
     }
 
     //test case: tests if record's duration and state are set when an UnableToCheckStatus event arrives.
@@ -198,7 +200,8 @@ public class SyncProcessorTest extends BaseUnitTests {
         //setup
         Order order = testUtils.createOrder(FAKE_ORDER_ID);
         AuditableOrderStateChange auditableOrderStateChange = testUtils.createAuditableOrderStateChange(order, OrderState.UNABLE_TO_CHECK_STATUS);
-        auditableOrderStateChange.setTimestamp(testUtils.getNOW());
+        Timestamp changeTime = testUtils.getNOW();
+        auditableOrderStateChange.setTimestamp(changeTime);
         Record record = testUtils.createRecord(order.getId());
 
         Mockito.when(dbManager.getRecordByOrderId(Mockito.anyString())).thenReturn(record);
@@ -207,6 +210,7 @@ public class SyncProcessorTest extends BaseUnitTests {
         //verify
         Assert.assertEquals(syncProcessor.getDuration(auditableOrderStateChange.getTimestamp(), record.getStartTime()), record.getDuration());
         Assert.assertEquals(OrderState.UNABLE_TO_CHECK_STATUS, record.getState());
+        Mockito.verify(record.getStateHistory()).updateState(OrderState.UNABLE_TO_CHECK_STATUS, changeTime);
     }
 
     //test case: test if the method works properly when a fulfilled state change event arrives.
@@ -216,7 +220,8 @@ public class SyncProcessorTest extends BaseUnitTests {
         //setup
         Order order = testUtils.createOrder(FAKE_ORDER_ID);
         AuditableOrderStateChange auditableOrderStateChange = testUtils.createAuditableOrderStateChange(order, OrderState.FULFILLED);
-        auditableOrderStateChange.setTimestamp(testUtils.getNOW());
+        Timestamp changeTime = testUtils.getNOW();
+        auditableOrderStateChange.setTimestamp(changeTime);
         Record record = testUtils.createSimplestRecord(order.getId());
         Timestamp recordStartTime = new Timestamp(System.currentTimeMillis()+testUtils.TEN_SECONDS);
         record.setStartTime(recordStartTime);
@@ -234,8 +239,141 @@ public class SyncProcessorTest extends BaseUnitTests {
         syncProcessor.manageRecord(auditableOrderStateChange);
         //verify
         Assert.assertEquals(auditableOrderStateChange.getTimestamp(), record.getStartTime());
+        Mockito.verify(record.getStateHistory(), Mockito.times(2)).updateState(OrderState.FULFILLED, changeTime);
     }
+    
+    // test case: When invoking the method manageRecord passing a PAUSING state change, 
+    // it must update the record's state history properly.
+    @Test
+    public void testManageRecordWithPausingStateChange() {
+        // setup
+        Order order = testUtils.createOrder(FAKE_ORDER_ID);
+        AuditableOrderStateChange auditableOrderStateChange = testUtils.createAuditableOrderStateChange(order, OrderState.PAUSING);
+        Timestamp changeTime = testUtils.getNOW();
+        auditableOrderStateChange.setTimestamp(changeTime);
+        Record record = testUtils.createSimplestRecord(order.getId());
+        Timestamp recordStartTime = new Timestamp(System.currentTimeMillis()+testUtils.TEN_SECONDS);
+        record.setStartTime(recordStartTime);
 
+        Mockito.when(dbManager.getRecordByOrderId(Mockito.anyString())).thenReturn(record);
+        
+        // exercise
+        syncProcessor.manageRecord(auditableOrderStateChange);
+        
+        // verify
+        Mockito.verify(record.getStateHistory()).updateState(OrderState.PAUSING, changeTime);
+    }
+    
+    // test case: When invoking the method manageRecord passing a PAUSED state change, 
+    // it must update the record's state history properly.
+    @Test
+    public void testManageRecordWithPausedStateChange() {
+        // setup
+        Order order = testUtils.createOrder(FAKE_ORDER_ID);
+        AuditableOrderStateChange auditableOrderStateChange = testUtils.createAuditableOrderStateChange(order, OrderState.PAUSED);
+        Timestamp changeTime = testUtils.getNOW();
+        auditableOrderStateChange.setTimestamp(changeTime);
+        Record record = testUtils.createSimplestRecord(order.getId());
+        Timestamp recordStartTime = new Timestamp(System.currentTimeMillis()+testUtils.TEN_SECONDS);
+        record.setStartTime(recordStartTime);
+
+        Mockito.when(dbManager.getRecordByOrderId(Mockito.anyString())).thenReturn(record);
+        
+        // exercise
+        syncProcessor.manageRecord(auditableOrderStateChange);
+        
+        // verify
+        Mockito.verify(record.getStateHistory()).updateState(OrderState.PAUSED, changeTime);
+    }
+    
+    // test case: When invoking the method manageRecord passing a HIBERNATING state change, 
+    // it must update the record's state history properly.
+    @Test
+    public void testManageRecordWithHibernatingStateChange() {
+        // setup
+        Order order = testUtils.createOrder(FAKE_ORDER_ID);
+        AuditableOrderStateChange auditableOrderStateChange = testUtils.createAuditableOrderStateChange(order, OrderState.HIBERNATING);
+        Timestamp changeTime = testUtils.getNOW();
+        auditableOrderStateChange.setTimestamp(changeTime);
+        Record record = testUtils.createSimplestRecord(order.getId());
+        Timestamp recordStartTime = new Timestamp(System.currentTimeMillis()+testUtils.TEN_SECONDS);
+        record.setStartTime(recordStartTime);
+
+        Mockito.when(dbManager.getRecordByOrderId(Mockito.anyString())).thenReturn(record);
+        
+        // exercise
+        syncProcessor.manageRecord(auditableOrderStateChange);
+        
+        // verify
+        Mockito.verify(record.getStateHistory()).updateState(OrderState.HIBERNATING, changeTime);
+    }
+    
+    // test case: When invoking the method manageRecord passing a HIBERNATED state change, 
+    // it must update the record's state history properly.
+    @Test
+    public void testManageRecordWithHibernatedStateChange() {
+        // setup
+        Order order = testUtils.createOrder(FAKE_ORDER_ID);
+        AuditableOrderStateChange auditableOrderStateChange = testUtils.createAuditableOrderStateChange(order, OrderState.HIBERNATED);
+        Timestamp changeTime = testUtils.getNOW();
+        auditableOrderStateChange.setTimestamp(changeTime);
+        Record record = testUtils.createSimplestRecord(order.getId());
+        Timestamp recordStartTime = new Timestamp(System.currentTimeMillis()+testUtils.TEN_SECONDS);
+        record.setStartTime(recordStartTime);
+
+        Mockito.when(dbManager.getRecordByOrderId(Mockito.anyString())).thenReturn(record);
+        
+        // exercise
+        syncProcessor.manageRecord(auditableOrderStateChange);
+        
+        // verify
+        Mockito.verify(record.getStateHistory()).updateState(OrderState.HIBERNATED, changeTime);
+    }
+    
+    // test case: When invoking the method manageRecord passing a STOPPING state change, 
+    // it must update the record's state history properly.
+    @Test
+    public void testManageRecordWithStoppingStateChange() {
+        // setup
+        Order order = testUtils.createOrder(FAKE_ORDER_ID);
+        AuditableOrderStateChange auditableOrderStateChange = testUtils.createAuditableOrderStateChange(order, OrderState.STOPPING);
+        Timestamp changeTime = testUtils.getNOW();
+        auditableOrderStateChange.setTimestamp(changeTime);
+        Record record = testUtils.createSimplestRecord(order.getId());
+        Timestamp recordStartTime = new Timestamp(System.currentTimeMillis()+testUtils.TEN_SECONDS);
+        record.setStartTime(recordStartTime);
+
+        Mockito.when(dbManager.getRecordByOrderId(Mockito.anyString())).thenReturn(record);
+        
+        // exercise
+        syncProcessor.manageRecord(auditableOrderStateChange);
+        
+        // verify
+        Mockito.verify(record.getStateHistory()).updateState(OrderState.STOPPING, changeTime);
+    }
+    
+    // test case: When invoking the method manageRecord passing a STOPPED state change, 
+    // it must update the record's state history properly.
+    @Test
+    public void testManageRecordWithStoppedStateChange() {
+        // setup
+        Order order = testUtils.createOrder(FAKE_ORDER_ID);
+        AuditableOrderStateChange auditableOrderStateChange = testUtils.createAuditableOrderStateChange(order, OrderState.STOPPED);
+        Timestamp changeTime = testUtils.getNOW();
+        auditableOrderStateChange.setTimestamp(changeTime);
+        Record record = testUtils.createSimplestRecord(order.getId());
+        Timestamp recordStartTime = new Timestamp(System.currentTimeMillis()+testUtils.TEN_SECONDS);
+        record.setStartTime(recordStartTime);
+
+        Mockito.when(dbManager.getRecordByOrderId(Mockito.anyString())).thenReturn(record);
+        
+        // exercise
+        syncProcessor.manageRecord(auditableOrderStateChange);
+        
+        // verify
+        Mockito.verify(record.getStateHistory()).updateState(OrderState.STOPPED, changeTime);
+    }
+    
     //test case: check if checkOrdersHistory make the calls properly.
     @Test
     public void checkOrdersHistory() {

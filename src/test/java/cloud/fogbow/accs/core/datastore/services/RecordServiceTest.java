@@ -105,17 +105,82 @@ public class RecordServiceTest extends BaseUnitTests {
     //test case: just exercise the method by checking if it returned what it should return
     //(exactly what the repository returned, once its up to spring to test the correctness of the repository).
     @Test
-    public void testGetOpenedRecords() {
+    public void testGetOpenedRecordsOfResourceType() {
         //setup
-        mockDatabaseOperations(testUtils.RECORDS_BY_STATE, OrderState.FULFILLED, null, null, DEFAULT_RECORDS_SIZE);
-
+        AccountingUser accountingUser = testUtils.getAccountingUser();
+        Timestamp startTime = new Timestamp(System.currentTimeMillis());
+        Timestamp endTime = new Timestamp(System.currentTimeMillis());
+        
+        mockDatabaseResponseOfResourceType(accountingUser, startTime, endTime, OrderState.FULFILLED);
+        mockDatabaseResponseOfResourceType(accountingUser, startTime, endTime, OrderState.PAUSING);
+        mockDatabaseResponseOfResourceType(accountingUser, startTime, endTime, OrderState.PAUSED);
+        mockDatabaseResponseOfResourceType(accountingUser, startTime, endTime, OrderState.HIBERNATING);
+        mockDatabaseResponseOfResourceType(accountingUser, startTime, endTime, OrderState.HIBERNATED);
+        mockDatabaseResponseOfResourceType(accountingUser, startTime, endTime, OrderState.STOPPING);
+        mockDatabaseResponseOfResourceType(accountingUser, startTime, endTime, OrderState.STOPPED);
+        mockDatabaseResponseOfResourceType(accountingUser, startTime, endTime, OrderState.SPAWNING);
+        
         //exercise
-        List<Record> records = recordService.getOpenedRecords(testUtils.getAccountingUser(), FAKE_REQ_MEMBER, DEFAULT_RESOURCE_TYPE,
-                new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis()));
+        List<Record> records = recordService.getOpenedRecords(accountingUser, FAKE_REQ_MEMBER, DEFAULT_RESOURCE_TYPE,
+                startTime, endTime);
 
         //verify
-        Assert.assertEquals(2, records.size());
+        Assert.assertEquals(16, records.size());
         Assert.assertEquals(2, records.stream().filter(rec -> rec.getState().equals(OrderState.FULFILLED)).collect(Collectors.toList()).size());
+        Assert.assertEquals(2, records.stream().filter(rec -> rec.getState().equals(OrderState.PAUSING)).collect(Collectors.toList()).size());
+        Assert.assertEquals(2, records.stream().filter(rec -> rec.getState().equals(OrderState.PAUSED)).collect(Collectors.toList()).size());
+        Assert.assertEquals(2, records.stream().filter(rec -> rec.getState().equals(OrderState.HIBERNATING)).collect(Collectors.toList()).size());
+        Assert.assertEquals(2, records.stream().filter(rec -> rec.getState().equals(OrderState.HIBERNATED)).collect(Collectors.toList()).size());
+        Assert.assertEquals(2, records.stream().filter(rec -> rec.getState().equals(OrderState.STOPPING)).collect(Collectors.toList()).size());
+        Assert.assertEquals(2, records.stream().filter(rec -> rec.getState().equals(OrderState.STOPPED)).collect(Collectors.toList()).size());
+        Assert.assertEquals(2, records.stream().filter(rec -> rec.getState().equals(OrderState.SPAWNING)).collect(Collectors.toList()).size());
+    }
+    
+    //test case: just exercise the method by checking if it returned what it should return
+    //(exactly what the repository returned, once its up to spring to test the correctness of the repository).
+    @Test
+    public void testGetOpenedRecords() {
+        //setup
+        AccountingUser accountingUser = testUtils.getAccountingUser();
+        Timestamp startTime = new Timestamp(System.currentTimeMillis());
+        Timestamp endTime = new Timestamp(System.currentTimeMillis());
+        
+        mockDatabaseResponse(accountingUser, startTime, endTime, OrderState.FULFILLED);
+        mockDatabaseResponse(accountingUser, startTime, endTime, OrderState.PAUSING);
+        mockDatabaseResponse(accountingUser, startTime, endTime, OrderState.PAUSED);
+        mockDatabaseResponse(accountingUser, startTime, endTime, OrderState.HIBERNATING);
+        mockDatabaseResponse(accountingUser, startTime, endTime, OrderState.HIBERNATED);
+        mockDatabaseResponse(accountingUser, startTime, endTime, OrderState.STOPPING);
+        mockDatabaseResponse(accountingUser, startTime, endTime, OrderState.STOPPED);
+        mockDatabaseResponse(accountingUser, startTime, endTime, OrderState.SPAWNING);
+        
+        //exercise
+        List<Record> records = recordService.getOpenedRecords(accountingUser, FAKE_REQ_MEMBER, startTime, endTime);
+
+        //verify
+        Assert.assertEquals(16, records.size());
+        Assert.assertEquals(2, records.stream().filter(rec -> rec.getState().equals(OrderState.FULFILLED)).collect(Collectors.toList()).size());
+        Assert.assertEquals(2, records.stream().filter(rec -> rec.getState().equals(OrderState.PAUSING)).collect(Collectors.toList()).size());
+        Assert.assertEquals(2, records.stream().filter(rec -> rec.getState().equals(OrderState.PAUSED)).collect(Collectors.toList()).size());
+        Assert.assertEquals(2, records.stream().filter(rec -> rec.getState().equals(OrderState.HIBERNATING)).collect(Collectors.toList()).size());
+        Assert.assertEquals(2, records.stream().filter(rec -> rec.getState().equals(OrderState.HIBERNATED)).collect(Collectors.toList()).size());
+        Assert.assertEquals(2, records.stream().filter(rec -> rec.getState().equals(OrderState.STOPPING)).collect(Collectors.toList()).size());
+        Assert.assertEquals(2, records.stream().filter(rec -> rec.getState().equals(OrderState.STOPPED)).collect(Collectors.toList()).size());
+        Assert.assertEquals(2, records.stream().filter(rec -> rec.getState().equals(OrderState.SPAWNING)).collect(Collectors.toList()).size());
+    }
+    
+    private void mockDatabaseResponse(AccountingUser user, Timestamp startTime, Timestamp endTime, OrderState state) {
+        Mockito.doReturn(testUtils.createRecordsWithState(DEFAULT_RECORDS_SIZE, state)).when(recordRepository).
+        findByUserAndRequestingMemberAndStartDateLessThanEqualAndStartDateGreaterThanEqualAndStateEquals(
+                user, FAKE_REQ_MEMBER, startTime,
+                endTime, state);
+    }
+    
+    private void mockDatabaseResponseOfResourceType(AccountingUser user, Timestamp startTime, Timestamp endTime, OrderState state) {
+        Mockito.doReturn(testUtils.createRecordsWithState(DEFAULT_RECORDS_SIZE, state)).when(recordRepository).
+        findByUserAndRequestingMemberAndResourceTypeAndStartDateLessThanEqualAndStartDateGreaterThanEqualAndStateEquals(
+                user, FAKE_REQ_MEMBER, DEFAULT_RESOURCE_TYPE, startTime,
+                endTime, state);
     }
 
     //test case: just exercise the method by checking if it returned what it should return
@@ -214,16 +279,23 @@ public class RecordServiceTest extends BaseUnitTests {
 
     private void mockRecordsByState(OrderState state, int size) {
         switch (state) {
+            case CLOSED:
+            Mockito.doReturn(testUtils.createClosedRecords(size)).when(recordRepository).findByUserAndRequestingMemberAndResourceTypeAndStartDateLessThanEqualAndEndDateGreaterThanEqual(
+                    Mockito.any(AccountingUser.class), Mockito.anyString(), Mockito.anyString(), Mockito.any(Timestamp.class),
+                    Mockito.any(Timestamp.class));
+            break;
             case FULFILLED:
-                Mockito.doReturn(testUtils.createOpenedRecords(size)).when(recordRepository).findByUserAndRequestingMemberAndResourceTypeAndStartDateLessThanEqualAndStartDateGreaterThanEqualAndStateEquals(
+            case PAUSING:
+            case PAUSED:
+            case HIBERNATING:
+            case HIBERNATED:
+            case STOPPING:
+            case STOPPED:
+            case SPAWNING:
+                Mockito.doReturn(testUtils.createRecordsWithState(size, state)).when(recordRepository).findByUserAndRequestingMemberAndResourceTypeAndStartDateLessThanEqualAndStartDateGreaterThanEqualAndStateEquals(
                         Mockito.any(AccountingUser.class), Mockito.anyString(), Mockito.anyString(), Mockito.any(Timestamp.class),
                         Mockito.any(Timestamp.class), Mockito.any(OrderState.class));
-                break;
-            case CLOSED:
-                Mockito.doReturn(testUtils.createClosedRecords(size)).when(recordRepository).findByUserAndRequestingMemberAndResourceTypeAndStartDateLessThanEqualAndEndDateGreaterThanEqual(
-                        Mockito.any(AccountingUser.class), Mockito.anyString(), Mockito.anyString(), Mockito.any(Timestamp.class),
-                        Mockito.any(Timestamp.class));
-                break;
+            break;
         }
     }
 
