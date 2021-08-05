@@ -7,6 +7,8 @@ import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Objects;
 
+//TODO explain why this class is duplicated in RAS and ACCS or remove
+//this version
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "order_table")

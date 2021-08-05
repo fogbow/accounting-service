@@ -6,6 +6,8 @@ import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.util.*;
 
+// TODO explain why this class is duplicated in RAS and ACCS or remove
+// this version
 @Entity
 @Table(name = "compute_order_table")
 public class ComputeOrder extends Order {
