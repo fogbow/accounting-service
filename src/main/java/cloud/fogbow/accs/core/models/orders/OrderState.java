@@ -32,4 +32,8 @@ public enum OrderState {
     OrderState(String repr) {
         this.repr = repr;
     }
+
+    public String getRepr() {
+        return repr;
+    }
 }
