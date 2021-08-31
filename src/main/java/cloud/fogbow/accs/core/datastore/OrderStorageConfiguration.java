@@ -31,7 +31,8 @@ public class OrderStorageConfiguration extends StorageConfiguration {
 	// The order datasource properties names must use this prefix.
 	public static final String ORDER_DATASOURCE_CONFIGURATION_PREFIX = "spring.order-datasource";
 	// All entities related to Order must be placed in this package.
-	private static final String ORDER_ENTITIES_PACKAGE = "cloud.fogbow.accs.core.models.orders";
+	private static final String[] ORDER_ENTITIES_PACKAGES = { "cloud.fogbow.ras.core.models.orders", 
+	        "cloud.fogbow.ras.core.datastore.orderstorage" };
 
 	@Autowired
     private Environment env;
@@ -45,7 +46,7 @@ public class OrderStorageConfiguration extends StorageConfiguration {
     @Bean
     public LocalContainerEntityManagerFactoryBean orderEntityManager() {
         DataSource source = orderDataSource();
-    	String[] packagesToScan = { ORDER_ENTITIES_PACKAGE };
+    	String[] packagesToScan = ORDER_ENTITIES_PACKAGES;
         return getEntityManager(source, env, packagesToScan);
     }
     

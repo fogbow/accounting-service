@@ -1,7 +1,7 @@
 package cloud.fogbow.accs.core.datastore.orderstorage;
 
 import cloud.fogbow.accs.core.datastore.OrderStorageConfiguration;
-import cloud.fogbow.accs.core.models.orders.Order;
+import cloud.fogbow.ras.core.models.orders.Order;
 
 import java.util.Optional;
 

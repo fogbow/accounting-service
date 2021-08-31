@@ -3,7 +3,7 @@ package cloud.fogbow.accs.core.datastore.accountingstorage;
 import cloud.fogbow.accs.core.datastore.AccountingStorageConfiguration;
 import cloud.fogbow.accs.core.models.AccountingUser;
 import cloud.fogbow.accs.core.models.Record;
-import cloud.fogbow.accs.core.models.orders.OrderState;
+import cloud.fogbow.ras.core.models.orders.OrderState;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import org.springframework.stereotype.Repository;

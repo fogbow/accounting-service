@@ -1,8 +1,8 @@
 package cloud.fogbow.accs.core.datastore.orderstorage;
 
 import cloud.fogbow.accs.core.datastore.OrderStorageConfiguration;
-import cloud.fogbow.accs.core.models.orders.AuditableOrderStateChange;
-import cloud.fogbow.accs.core.models.orders.OrderState;
+import cloud.fogbow.ras.core.datastore.orderstorage.AuditableOrderStateChange;
+import cloud.fogbow.ras.core.models.orders.OrderState;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 

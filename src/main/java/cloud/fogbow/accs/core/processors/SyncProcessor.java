@@ -3,9 +3,9 @@ package cloud.fogbow.accs.core.processors;
 import cloud.fogbow.accs.constants.Messages;
 import cloud.fogbow.accs.core.datastore.DatabaseManager;
 import cloud.fogbow.accs.core.models.*;
-import cloud.fogbow.accs.core.models.orders.AuditableOrderStateChange;
-import cloud.fogbow.accs.core.models.orders.Order;
-import cloud.fogbow.accs.core.models.orders.OrderState;
+import cloud.fogbow.ras.core.datastore.orderstorage.AuditableOrderStateChange;
+import cloud.fogbow.ras.core.models.orders.Order;
+import cloud.fogbow.ras.core.models.orders.OrderState;
 import cloud.fogbow.accs.core.SpecFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -161,7 +161,8 @@ public class SyncProcessor implements Runnable {
 	}
 
 	protected boolean orderHasFinished(OrderState state) {
-		return state.equals((OrderState.CLOSED)) || state.equals(OrderState.FAILED_AFTER_SUCCESSFUL_REQUEST) || state.equals((OrderState.DEACTIVATED));
+        return state.equals((OrderState.CLOSED)) || state
+                .equals(OrderState.FAILED_AFTER_SUCCESSFUL_REQUEST);
 	}
 
 	protected Timestamp extractDateFromTimestamp(Timestamp timestamp) {

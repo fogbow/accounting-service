@@ -4,6 +4,8 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
+import cloud.fogbow.ras.core.models.NetworkAllocationMode;
+
 @Entity
 public class NetworkSpec extends OrderSpec {
 

@@ -4,12 +4,13 @@ import cloud.fogbow.accs.core.datastore.DatabaseManager;
 import cloud.fogbow.accs.core.models.AccountingUser;
 import cloud.fogbow.accs.core.models.Record;
 import cloud.fogbow.accs.core.models.UserIdentity;
-import cloud.fogbow.accs.core.models.orders.AuditableOrderStateChange;
-import cloud.fogbow.accs.core.models.orders.Order;
-import cloud.fogbow.accs.core.models.orders.OrderState;
 import cloud.fogbow.as.core.util.AuthenticationUtil;
 import cloud.fogbow.common.exceptions.FogbowException;
 import cloud.fogbow.common.models.SystemUser;
+import cloud.fogbow.ras.core.datastore.orderstorage.AuditableOrderStateChange;
+import cloud.fogbow.ras.core.models.orders.ComputeOrder;
+import cloud.fogbow.ras.core.models.orders.Order;
+import cloud.fogbow.ras.core.models.orders.OrderState;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
@@ -123,7 +124,7 @@ public class TestUtils {
     }
     
     public Order createOrder(String id) {
-        Order order = new Order();
+        Order order = new ComputeOrder();
         order.setId(id);
         return order;
     }

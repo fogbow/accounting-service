@@ -9,10 +9,10 @@ import cloud.fogbow.accs.core.datastore.services.RecordService;
 import cloud.fogbow.accs.core.models.AccountingUser;
 import cloud.fogbow.accs.core.models.AuditableOrderIdRecorder;
 import cloud.fogbow.accs.core.models.Record;
-import cloud.fogbow.accs.core.models.orders.AuditableOrderStateChange;
-import cloud.fogbow.accs.core.models.orders.Order;
-import cloud.fogbow.accs.core.models.orders.OrderState;
 import cloud.fogbow.common.models.SystemUser;
+import cloud.fogbow.ras.core.datastore.orderstorage.AuditableOrderStateChange;
+import cloud.fogbow.ras.core.models.orders.Order;
+import cloud.fogbow.ras.core.models.orders.OrderState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

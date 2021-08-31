@@ -1,7 +1,7 @@
 package cloud.fogbow.accs.api.http.response;
 
-import cloud.fogbow.accs.core.models.orders.OrderState;
 import cloud.fogbow.accs.core.models.specs.OrderSpec;
+import cloud.fogbow.ras.core.models.orders.OrderState;
 import cloud.fogbow.accs.constants.ApiDocumentation;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

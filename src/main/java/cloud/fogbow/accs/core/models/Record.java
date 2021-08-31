@@ -1,7 +1,7 @@
 package cloud.fogbow.accs.core.models;
 
-import cloud.fogbow.accs.core.models.orders.OrderState;
 import cloud.fogbow.accs.core.models.specs.OrderSpec;
+import cloud.fogbow.ras.core.models.orders.OrderState;
 
 import javax.persistence.*;
 
