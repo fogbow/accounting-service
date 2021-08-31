@@ -4,9 +4,9 @@ import cloud.fogbow.accs.core.BaseUnitTests;
 import cloud.fogbow.accs.core.datastore.DatabaseManager;
 import cloud.fogbow.accs.core.models.AuditableOrderIdRecorder;
 import cloud.fogbow.accs.core.models.Record;
-import cloud.fogbow.accs.core.models.orders.AuditableOrderStateChange;
-import cloud.fogbow.accs.core.models.orders.Order;
-import cloud.fogbow.accs.core.models.orders.OrderState;
+import cloud.fogbow.ras.core.datastore.orderstorage.AuditableOrderStateChange;
+import cloud.fogbow.ras.core.models.orders.Order;
+import cloud.fogbow.ras.core.models.orders.OrderState;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -33,7 +33,6 @@ public class SyncProcessorTest extends BaseUnitTests {
         // exercise/verify
         Assert.assertTrue(syncProcessor.orderHasFinished(OrderState.CLOSED));
         Assert.assertTrue(syncProcessor.orderHasFinished(OrderState.FAILED_AFTER_SUCCESSFUL_REQUEST));
-        Assert.assertTrue(syncProcessor.orderHasFinished(OrderState.DEACTIVATED));
         Assert.assertFalse(syncProcessor.orderHasFinished(OrderState.FULFILLED));
     }
 

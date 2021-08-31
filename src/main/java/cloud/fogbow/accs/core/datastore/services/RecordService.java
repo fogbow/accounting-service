@@ -4,8 +4,8 @@ import cloud.fogbow.accs.constants.Messages;
 import cloud.fogbow.accs.core.datastore.accountingstorage.RecordRepository;
 import cloud.fogbow.accs.core.exceptions.InvalidIntervalException;
 import cloud.fogbow.accs.core.models.*;
-import cloud.fogbow.accs.core.models.orders.OrderState;
 import cloud.fogbow.common.models.SystemUser;
+import cloud.fogbow.ras.core.models.orders.OrderState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
