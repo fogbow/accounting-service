@@ -1,7 +1,5 @@
 package cloud.fogbow.accs.core.models.orders;
 
-//TODO explain why this class is duplicated in RAS and ACCS or remove
-//this version
 public enum OrderState {
     OPEN("OPEN"),
     PENDING("PENDING"),

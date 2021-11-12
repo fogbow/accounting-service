@@ -6,8 +6,6 @@ import org.apache.log4j.Logger;
 import javax.persistence.*;
 import javax.validation.constraints.Size;
 
-//TODO explain why this class is duplicated in RAS and ACCS or remove
-//this version
 @Entity
 @Table(name = "network_order_table")
 public class NetworkOrder extends Order {

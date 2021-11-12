@@ -3,8 +3,6 @@ package cloud.fogbow.accs.core.models.orders;
 import javax.persistence.*;
 import java.sql.Timestamp;
 
-//TODO explain why this class is duplicated in RAS and ACCS or remove
-//this version
 @Entity
 @Table(name = "state_change_event")
 @SequenceGenerator(name="seq", initialValue=1, allocationSize = 1)
