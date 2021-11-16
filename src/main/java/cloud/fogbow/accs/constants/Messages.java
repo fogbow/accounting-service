@@ -13,6 +13,8 @@ public class Messages {
         public static final String BILLING_PREDICTIONS = "Accounting predictions are not allowed.";
         public static final String START_TIME_GREATER_THAN_END_TIME = "Begin time must be smaller than end time.";
         public static final String GENERIC_EXCEPTION = "Operation returned error: %s.";
+		public static final String INVALID_RECORD_TYPE = "Invalid record type: %s.";
+		public static final String INVALID_RECORD_PROPERTY = "Invalid record property: %s.";
     }
 
 	public static class Info {

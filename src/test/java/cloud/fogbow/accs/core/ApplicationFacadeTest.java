@@ -106,6 +106,26 @@ public class ApplicationFacadeTest extends BaseUnitTests{
                 Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.any(SystemUser.class));
         Mockito.verify(applicationFacade, Mockito.times(getFakeRecordsCollection().size())).mountResponseRecord(Mockito.any(Record.class));
     }
+    
+    @Test
+    public void testGetAllResourcesUserRecords() throws Exception {
+        //setup
+        DatabaseManager dbManager = testUtils.mockDbManager();
+        applicationFacade.setDatabaseManager(dbManager);
+        Mockito.when(plugin.isAuthorized(Mockito.any(SystemUser.class), Mockito.any(AccountingOperation.class))).thenReturn(true);
+        Mockito.when(dbManager.getUserRecords(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
+            .thenReturn(getFakeRecordsCollection());
+        
+        //exercise
+        applicationFacade.getAllResourcesUserRecords(testUtils.FAKE_USER_ID, testUtils.FAKE_REQUESTING_MEMBER, testUtils.FAKE_PROVIDER_MEMBER,
+            testUtils.FAKE_INTERVAL, testUtils.FAKE_INTERVAL, testUtils.FAKE_USER_TOKEN);
+        
+        //verify
+        Mockito.verify(applicationFacade, Mockito.times(1)).handleAuthIssues(Mockito.anyString(), Mockito.eq(AccountingOperationType.OTHERS_BILLING));
+        Mockito.verify(dbManager, Mockito.times(1)).getUserRecords(
+            Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString());
+        Mockito.verify(applicationFacade, Mockito.times(getFakeRecordsCollection().size())).mountResponseRecord(Mockito.any(Record.class));
+    }
 
     private List<Record> getFakeRecordsCollection() {
         List<Record> records = new ArrayList<>();

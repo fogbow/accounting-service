@@ -1,6 +1,7 @@
 package cloud.fogbow.accs.core.processors;
 
 import cloud.fogbow.accs.constants.Messages;
+import cloud.fogbow.accs.constants.SystemConstants;
 import cloud.fogbow.accs.core.datastore.DatabaseManager;
 import cloud.fogbow.accs.core.models.*;
 import cloud.fogbow.accs.core.models.orders.AuditableOrderStateChange;
@@ -24,7 +25,6 @@ import java.util.List;
 public class SyncProcessor implements Runnable {
 	private static final int SLEEP_TIME = 60000; // One minute
 	private static final Logger LOGGER = LoggerFactory.getLogger(SyncProcessor.class);
-	private final String DATE_FORMAT = "yyyy-MM-dd";
 
 	private AuditableOrderIdRecorder idRecorder;
 
@@ -81,21 +81,19 @@ public class SyncProcessor implements Runnable {
 			createRecord(auditOrder);
 		} else {
 			if (orderHasFinished(auditOrder.getNewState())) {
-				rec.setState(auditOrder.getNewState());
 				rec.setEndTime(auditOrder.getTimestamp());
 				rec.setEndDate(extractDateFromTimestamp(auditOrder.getTimestamp()));
 				setClosedOrderDuration(auditOrder, rec);
 			} else if (auditOrder.getNewState().equals(OrderState.UNABLE_TO_CHECK_STATUS)) {
 				rec.setDuration(getDuration(auditOrder.getTimestamp(), rec.getStartTime()));
-				rec.setState(auditOrder.getNewState());
 			} else if (auditOrder.getNewState().equals(OrderState.FULFILLED)) {
-				rec.setState(auditOrder.getNewState());
 				rec.setDuration(0);
 				if (rec.getStartTime() == null) {
 					rec.setStartTime(auditOrder.getTimestamp());
 				}
-
 			}
+			
+			rec.updateState(auditOrder.getNewState(), auditOrder.getTimestamp());
 			dbManager.saveRecord(rec);
 		}
 	}
@@ -119,7 +117,7 @@ public class SyncProcessor implements Runnable {
 
 		setTimeAttributes(ord, auditOrder, rec);
 
-		rec.setState(auditOrder.getNewState());
+		rec.updateState(auditOrder.getNewState(), auditOrder.getTimestamp());
 
 		dbManager.saveUser(user);
 		dbManager.saveRecord(rec);
@@ -166,7 +164,7 @@ public class SyncProcessor implements Runnable {
 
 	protected Timestamp extractDateFromTimestamp(Timestamp timestamp) {
 		try {
-			DateFormat f = new SimpleDateFormat(DATE_FORMAT);
+			DateFormat f = new SimpleDateFormat(SystemConstants.COMPLETE_DATE_FORMAT);
 			Date d = f.parse(f.format((Date) timestamp));
 			return new Timestamp(d.getTime());
 		} catch (ParseException pe) {

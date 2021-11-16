@@ -49,6 +49,9 @@ public class Record {
 	@Column
 	@Enumerated(EnumType.STRING)
 	private OrderState state;
+	
+	@OneToOne(cascade={CascadeType.ALL})
+	private OrderStateHistory stateHistory;
 
 	@ManyToOne
 	@JoinColumns({
@@ -125,10 +128,19 @@ public class Record {
 		return state;
 	}
 
-	public void setState(OrderState newState) {
+	public void updateState(OrderState newState, Timestamp changeTime) {
+		this.stateHistory.updateState(newState, changeTime);
 		this.state = newState;
 	}
-
+	
+	public OrderStateHistory getStateHistory() {
+		return this.stateHistory;
+	}
+	
+	public void setStateHistory(OrderStateHistory newHistory) {
+		this.stateHistory = newHistory;
+	}
+	
 	public void setStartDate(Timestamp startDate) {
 		this.startDate = startDate;
 	}
@@ -177,6 +189,7 @@ public class Record {
 		this.duration = 0;
 		this.state = OrderState.FULFILLED;
 		this.user = user;
+		this.stateHistory = new OrderStateHistory();
 	}
 
 	public Record(String orderId, String resourceType, OrderSpec spec, String requestingMember, AccountingUser user) {
@@ -186,6 +199,7 @@ public class Record {
 		this.requestingMember = requestingMember;
 		this.duration = 0;
 		this.user = user;
+		this.stateHistory = new OrderStateHistory();
 	}
 
 	public Record() {}

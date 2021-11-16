@@ -1,5 +1,6 @@
 package cloud.fogbow.accs.api.http.response;
 
+import cloud.fogbow.accs.core.models.OrderStateHistory;
 import cloud.fogbow.accs.core.models.orders.OrderState;
 import cloud.fogbow.accs.core.models.specs.OrderSpec;
 import cloud.fogbow.accs.constants.ApiDocumentation;
@@ -10,7 +11,7 @@ import java.sql.Timestamp;
 import java.util.Objects;
 
 @ApiModel
-public class Record {
+public abstract class Record {
 
 	@ApiModelProperty(position = 0, example = ApiDocumentation.Record.RECORD_ID)
 	private Long id;
@@ -21,8 +22,8 @@ public class Record {
 	@ApiModelProperty(position = 2, example = ApiDocumentation.Record.RESOURCE_TYPE)
 	private String resourceType;
 	
-	@ApiModelProperty
-	private OrderSpec spec;
+	// TODO update documentation
+	// The spec field was moved to the Record subclasses
 	
 	@ApiModelProperty(position = 4, example = ApiDocumentation.Record.REQUESTER)
 	private String requester;
@@ -44,6 +45,9 @@ public class Record {
 
 	@ApiModelProperty(position = 10, example = ApiDocumentation.Record.STATE)
 	private OrderState state;
+	
+	// TODO update documentation
+	private OrderStateHistory stateHistory;
 
 	public Long getId() {
 		return id;
@@ -69,13 +73,8 @@ public class Record {
 		this.resourceType = resourceType;
 	}
 
-	public OrderSpec getSpec() {
-		return spec;
-	}
-
-	public void setSpec(OrderSpec spec) {
-		this.spec = spec;
-	}
+	public abstract OrderSpec getSpec();
+	public abstract void setSpec(OrderSpec spec);
 
 	public void setEndTime(Timestamp endTime) {
 		this.endTime = endTime;
@@ -132,6 +131,14 @@ public class Record {
 	public Timestamp getEndDate() {
 		return endDate;
 	}
+	
+	public OrderStateHistory getStateHistory() {
+		return stateHistory;
+	}
+
+	public void setStateHistory(OrderStateHistory stateHistory) {
+		this.stateHistory = stateHistory;
+	}
 
 	@Override
 	public boolean equals(Object o) {
@@ -142,22 +149,22 @@ public class Record {
 				id.equals(record.id) &&
 				Objects.equals(orderId, record.orderId) &&
 				Objects.equals(resourceType, record.resourceType) &&
-				Objects.equals(spec, record.spec) &&
 				Objects.equals(requester, record.requester) &&
 				Objects.equals(startTime, record.startTime);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, orderId, resourceType, spec, requester, startTime, duration);
+		return Objects.hash(id, orderId, resourceType, requester, startTime, duration);
 	}
 
-	public Record(Long id, String orderId, String resourceType, OrderSpec spec, String requester, Timestamp startTime,
-				  Timestamp startDate, Timestamp endTime, Timestamp endDate, long duration, OrderState state) {
+	public Record(Long id, String orderId, String resourceType,
+			String requester, Timestamp startTime,
+				  Timestamp startDate, Timestamp endTime, Timestamp endDate, long duration, OrderState state,
+				  OrderStateHistory orderStateHistory) {
 		this.id = id;
 		this.orderId = orderId;
 		this.resourceType = resourceType;
-		this.spec = spec;
 		this.requester = requester;
 		this.startTime = startTime;
 		this.startDate = startDate;
@@ -165,6 +172,7 @@ public class Record {
 		this.endTime = endTime;
 		this.duration = duration;
 		this.state = state;
+		this.stateHistory = orderStateHistory;
 	}
 
 	public Record() {}

@@ -53,6 +53,32 @@ public class ResourceUsage {
             throw e;
         }
     }
+    
+    @RequestMapping(value = "/{userId}/{requester}/{provider}/{initialDate}/{finalDate}",
+            method = RequestMethod.GET)
+    public ResponseEntity<List<Record>> getAllResourcesUsageFromOtherUser(
+            @ApiParam(value = ApiDocumentation.ResourceUsage.USER_ID) 
+            @PathVariable String userId,
+            @ApiParam(value = ApiDocumentation.ResourceUsage.REQUESTER)
+            @PathVariable String requester,
+            @ApiParam(value = ApiDocumentation.ResourceUsage.PROVIDER)
+            @PathVariable String provider,
+            @ApiParam(value = ApiDocumentation.ResourceUsage.INITIAL_DATE) 
+            @PathVariable String initialDate,
+            @ApiParam(value = ApiDocumentation.ResourceUsage.FINAL_DATE) 
+            @PathVariable String finalDate,
+            @ApiParam(value = cloud.fogbow.common.constants.ApiDocumentation.Token.SYSTEM_USER_TOKEN)
+            @RequestHeader(value = SystemConstants.SYSTEM_USER_TOKEN_HEADER_KEY) String systemUserToken)
+            throws Exception {
+        try {
+            List<Record> records = ApplicationFacade.getInstance().getAllResourcesUserRecords(userId, requester,
+                    provider, initialDate, finalDate, systemUserToken);
+            return new ResponseEntity<>(records, HttpStatus.OK);
+        } catch (Exception e) {
+            LOGGER.info(String.format(Messages.Exception.GENERIC_EXCEPTION, e.getMessage()), e);
+            throw e;
+        }
+    }
 
     @ApiOperation(value = ApiDocumentation.ResourceUsage.GET_OPERATION_FROM_SYSTEM_USER)
     @RequestMapping(value = "/{requester}/{resourceType}/{initialDate}/{finalDate}", method = RequestMethod.GET)

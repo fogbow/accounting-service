@@ -1,9 +1,12 @@
 package cloud.fogbow.accs.core.models.specs;
 
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.annotations.SerializedName;
 
 public enum NetworkAllocationMode {
-    DYNAMIC("dynamic"),
+    @SerializedName("dynamic")
+	DYNAMIC("dynamic"),
+	@SerializedName("static")
     STATIC("static");
 
     private String value;
